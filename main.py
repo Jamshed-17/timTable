@@ -14,25 +14,25 @@ def Is_t_group(ID):
         for n in range(0, len(data["schedule"][i]["lessons"])):
             if "name" in data["schedule"][i]["lessons"][n]:
                 prepod = ""
-                enters = 25 - len(data["schedule"][i]["lessons"][n]["name"].split(" ")[0])
+                enters = 15 - len(data["schedule"][i]["lessons"][n]["name"].split(" ")[0])
                 for j in range(0, len(data["schedule"][i]["lessons"][n]["name"].split(" "))):
                     if j == 0:
                         pass
                     else:
                         prepod = prepod + data["schedule"][i]["lessons"][n]["name"].split(" ")[j] + " "
 
-                lenPrepod = 30 - len(prepod)
+                lenPrepod = 20 - len(prepod)
                 if x == 1 :
                     les.append([data["schedule"][i]["lessons"][n]["number"], ". ",
-                                data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " " * enters, prepod,
-                                " " * lenPrepod, data["schedule"][i]["lessons"][n]["time"], " ",
-                                data["schedule"][i]["lessons"][n]["office"]])
+                                data["schedule"][i]["lessons"][n]["name"].split(" ")[0],"\n", " " * 6, prepod,
+                                " " * lenPrepod, data["schedule"][i]["lessons"][n]["time"], "     ",
+                                data["schedule"][i]["lessons"][n]["office"], "\n"])
                 else:
                     les.append(["*", data["schedule"][i]["date"], " ==> ", data["schedule"][i]["day"],"*"])
                     les.append([data["schedule"][i]["lessons"][n]["number"], ". ",
-                                data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " " * enters, prepod,
-                                " " * lenPrepod, data["schedule"][i]["lessons"][n]["time"], " ",
-                                data["schedule"][i]["lessons"][n]["office"]])
+                                data["schedule"][i]["lessons"][n]["name"].split(" ")[0],"\n", " " * 6, prepod,
+                                " " * lenPrepod, data["schedule"][i]["lessons"][n]["time"], "     ",
+                                data["schedule"][i]["lessons"][n]["office"], "\n"])
                     x = 1
             else:
                 print("\n")
