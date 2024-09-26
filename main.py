@@ -1,9 +1,9 @@
 import requests
 
 
-def Is_t_group(ID):
+def Is_t_group(ID, ind):
     x = 0
-    strokes = ""
+    strokes = []
     #Получаем доступ к объекту
     client = requests.get(f"https://urtk-journal.ru/api/schedule/group/{ID}")
     #Форматируем его под себя
@@ -43,8 +43,9 @@ def Is_t_group(ID):
             for j in range(0, len(les[i])):
                 stroke = stroke + str(les[i][j])
             stroke = stroke + "\n"
-        strokes = strokes + stroke  + "\n"
-    return strokes
+        strokes.append(stroke  + "\n")
+    print(strokes[5])
+    return strokes[ind]
 
-Is_t_group(16) #16 - моя группа
+Is_t_group(16, 2) #16 - моя группа
 
