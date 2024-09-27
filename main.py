@@ -23,6 +23,7 @@ def GroupChekName(group_name):
 
 def Is_t_group(ID, ind):
     x = 0
+    num = 0
     if ind == 6:
         strokes = ""
     else:
@@ -34,31 +35,35 @@ def Is_t_group(ID, ind):
     #Выводим [дату, день недели, предмет]
     for i in range(0, len(data["schedule"])):
         les = []
-        for n in range(0, len(data["schedule"][i]["lessons"])):
-            if "name" in data["schedule"][i]["lessons"][n]:
-                prepod = ""
-                #enters = 15 - len(data["schedule"][i]["lessons"][n]["name"].split(" ")[0])
-                for j in range(0, len(data["schedule"][i]["lessons"][n]["name"].split(" "))):
-                    if j == 0:
-                        pass
-                    else:
-                        prepod = prepod + data["schedule"][i]["lessons"][n]["name"].split(" ")[j] + " "
-
-                lenPrepod = 20 - len(prepod)
-                if x == 1 :
-                    les.append(["*", data["schedule"][i]["lessons"][n]["number"], ".", "* ",
-                                data["schedule"][i]["lessons"][n]["name"].split(" ")[0],"\n", " " * 6, prepod,
-                                " " * lenPrepod, data["schedule"][i]["lessons"][n]["time"], "     ",
-                                data["schedule"][i]["lessons"][n]["office"], "\n"])
-                else:
-                    les.append(["*", data["schedule"][i]["date"], " ==> ", data["schedule"][i]["day"],"*"])
-                    les.append(["*", data["schedule"][i]["lessons"][n]["number"], ".", "* ",
-                                data["schedule"][i]["lessons"][n]["name"].split(" ")[0],"\n", " " * 6, prepod,
-                                " " * lenPrepod, data["schedule"][i]["lessons"][n]["time"], "     ",
-                                data["schedule"][i]["lessons"][n]["office"], "\n"])
-                    x = 1
+        num = 0
+        for n in range(0, len(data["schedule"][i]["lessons"]) - 1):
+            num = num + 1
+            if x == 0:
+                les.append(["*", data["schedule"][i]["date"][0:5], " - ", data["schedule"][i]["day"], "*"])
+                x = 1
+            if "name" in data["schedule"][i]["lessons"][n] and "/" in data["schedule"][i]["lessons"][n]["name"]:
+                nameInTwo = data["schedule"][i]["lessons"][n]["name"]
+                nameInTwo = nameInTwo.split("/")
+                nameOne = str(nameInTwo[0])
+                nameOne = nameOne.split(" ")
+                nameOneList = nameOne[0] + "|" + nameOne[1] #nameOneList - для конечного списка - первая подгруппа
+                nameTwo = str(nameInTwo[1])
+                nameTwo = nameTwo.split(" ")
+                nameTwoList = nameTwo[0] + "|" + nameTwo[1] #nameTwoList - тоже для конечного списка - вторая подгуппа
+                officeList = data["schedule"][i]["lessons"][n]["office"]
+                officeList = officeList.split("/")
+                officeOne = officeList[0]
+                officeTwo = officeList[1]
+                les.append(["\t"*5, "*", num, "* \n",nameOneList, "гр" , " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo])
             else:
-                les.append("")
+                if "name" in data["schedule"][i]["lessons"][n]:
+                    for j in range(0, len(data["schedule"][i]["lessons"][n]["name"].split(" "))):
+                        if j == 0:
+                            pass
+                    if x == 1 :
+                        les.append(["*", num, "* ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " - ", data["schedule"][i]["lessons"][n]["office"]])
+                else:
+                    les.append(str(num))
 
         x = 0
         if ind != 6:
@@ -70,7 +75,6 @@ def Is_t_group(ID, ind):
             strokes.append(stroke  + "\n")
         else:
             stroke = ""
-
             for i in range(0, len(les)):
                 for j in range(0, len(les[i])):
                     stroke = stroke + str(les[i][j])
@@ -78,8 +82,8 @@ def Is_t_group(ID, ind):
             strokes = strokes + stroke + "\n"
 
     if ind == 6:
-        return strokes
+         return strokes
     else:
         return strokes[ind]
 
-
+Is_t_group(10, 0)

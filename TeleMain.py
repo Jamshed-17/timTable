@@ -11,21 +11,8 @@ def group(message):
   GroupId = Group_ID(group_name)"""
 
 
-
 @bot.message_handler(commands=['start'])
-def main(message):
-  bot.send_message(message.chat.id, text="""Напиши название своей группы. На выбор: 
-  
-1АС1 \t 1ИС1 \t 1С1 \t 1ТО1 \t1ТО2
-
-2АС1 \t 2ИС1 \t 2ИС2 \t 2ОС1 \t 2С1
-
-3АС1 \t 3ИС1 \t 3ИС2 \t 3ОС1 \t 3С1 \t 3Э1
-
-4ИС1 \t 4ОС1 \t 4С1 \t 4ИС2 \t 4АС1""".format(message.from_user))
-  bot.register_next_step_handler(message, getIdGroup);
-
-"""def start(message):
+def start(message):
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
   butn1 = types.KeyboardButton("1 курс")
   butn2 = types.KeyboardButton("2 курс")
@@ -35,17 +22,57 @@ def main(message):
   bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
   bot.register_next_step_handler(message, firstKurs);
 
+
+'''def main(message):
+  bot.send_message(message.chat.id, text="""Напиши название своей группы. На выбор: 
+  
+1АС1 \t 1ИС1 \t 1С1 \t 1ТО1 \t1ТО2
+
+2АС1 \t 2ИС1 \t 2ИС2 \t 2ОС1 \t 2С1
+
+3АС1 \t 3ИС1 \t 3ИС2 \t 3ОС1 \t 3С1 \t 3Э1
+
+4ИС1 \t 4ОС1 \t 4С1 \t 4ИС2 \t 4АС1""".format(message.from_user))
+  bot.register_next_step_handler(message, start);'''
+
+
 def firstKurs(message):
-  markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-  gr1 = types.KeyboardButton("1АС1")
-  gr2 = types.KeyboardButton("1ИС1")
-  gr3 = types.KeyboardButton("1С1")
-  gr4 = types.KeyboardButton("1ТО1")
-  gr5 = types.KeyboardButton("1ТО2")
-  markup.add(gr1, gr2, gr3, gr4, gr5)
-  bot.send_message(message.chat.id, text="Выбери группу".format(message.from_user),reply_markup=markup)"""
+  if message.text == "1 курс":
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    gr1 = types.KeyboardButton("1АС1")
+    gr2 = types.KeyboardButton("1ИС1")
+    gr3 = types.KeyboardButton("1С1")
+    gr4 = types.KeyboardButton("1ТО1")
+    gr5 = types.KeyboardButton("1ТО2")
+    markup.add(gr1, gr2, gr3, gr4, gr5)
+  elif message.text == "2 курс":
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    gr1 = types.KeyboardButton("2АС1")
+    gr2 = types.KeyboardButton("2ИС1")
+    gr3 = types.KeyboardButton("2ИС2")
+    gr4 = types.KeyboardButton("2ОС1")
+    gr5 = types.KeyboardButton("2С1")
+    markup.add(gr1, gr2, gr3, gr4, gr5)
+  elif message.text == "3 курс":
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    gr1 = types.KeyboardButton("3АС1")
+    gr2 = types.KeyboardButton("3ИС1")
+    gr3 = types.KeyboardButton("3ИС2")
+    gr4 = types.KeyboardButton("3ОС1")
+    gr5 = types.KeyboardButton("3С1")
+    gr6 = types.KeyboardButton("3Э1")
+    markup.add(gr1, gr2, gr3, gr4, gr5, gr6)
+  elif message.text == "4 курс":
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    gr1 = types.KeyboardButton("4АС1")
+    gr2 = types.KeyboardButton("4ИС1")
+    gr3 = types.KeyboardButton("4ИС2")
+    gr4 = types.KeyboardButton("4ОС1")
+    gr5 = types.KeyboardButton("4С1")
+    markup.add(gr1, gr2, gr3, gr4, gr5)
 
-
+  bot.send_message(message.chat.id, text="Выбери группу".format(message.from_user),reply_markup=markup)
+  bot.register_next_step_handler(message, getIdGroup);
 
 def getIdGroup(message):
   global GroupId
@@ -82,7 +109,7 @@ def func(message):
         bot.send_message(message.chat.id, text=Is_t_group(GroupId, 6), parse_mode="Markdown")
     elif (message.text == "Сменить группу"):
       bot.send_message(message.chat.id, text="Уверен, что хочешь сменить группу? Нажми на кнопку ещё раз, если да")
-      bot.register_next_step_handler(message, main);
+      bot.register_next_step_handler(message, start);
     else:
       bot.send_message(message.chat.id, text="Либо ты накосячил, либо я. Давай начнём с начала, нажми на /start")
   except:
