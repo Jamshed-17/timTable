@@ -15,6 +15,7 @@ def group(message):
 @bot.message_handler(commands=['start'])
 def main(message):
   bot.send_message(message.chat.id, text="""Напиши название своей группы. На выбор: 
+  
 1АС1 \t 1ИС1 \t 1С1 \t 1ТО1 \t1ТО2
 
 2АС1 \t 2ИС1 \t 2ИС2 \t 2ОС1 \t 2С1
@@ -64,6 +65,7 @@ def getIdGroup(message):
 
 @bot.message_handler(content_types=['text'])
 def func(message):
+  try:
     if(message.text == "Понедельник"):
         bot.send_message(message.chat.id, text=Is_t_group(GroupId, 0), parse_mode="Markdown")
     elif(message.text == "Вторник"):
@@ -83,5 +85,8 @@ def func(message):
       bot.register_next_step_handler(message, main);
     else:
       bot.send_message(message.chat.id, text="Либо ты накосячил, либо я. Давай начнём с начала, нажми на /start")
+  except:
+    bot.send_message(message.chat.id, text="Либо ты накосячил, либо я. Давай начнём с начала, нажми на /start")
+
 
 bot.infinity_polling()
