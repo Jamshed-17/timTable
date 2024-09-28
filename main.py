@@ -23,6 +23,7 @@ def GroupChekName(group_name):
 
 def Is_t_group(ID, ind):
     x = 0
+    y = 0
     chekkk = True
     num = 0
     if ind == 6:
@@ -86,23 +87,24 @@ def Is_t_group(ID, ind):
 
         x = 0
         if ind != 6:
+
             stroke = ""
-            for i in range(0, len(les)):
-                for j in range(0, len(les[i])):
-                    stroke = stroke + str(les[i][j])
+            for ik in range(0, len(les)):
+                for j in range(0, len(les[ik])):
+                    stroke = stroke + str(les[ik][j])
                 stroke = stroke + "\n"
             strokes.append(stroke  + "\n")
         else:
             stroke = ""
-            for i in range(0, len(les)):
-                for j in range(0, len(les[i])):
-                    stroke = stroke + str(les[i][j])
+            for il in range(0, len(les)):
+                for j in range(0, len(les[il])):
+                    stroke = stroke + str(les[il][j])
                 stroke = stroke + "\n"
             strokes = strokes + stroke + "\n"
 
     if ind == 6:
          return strokes
     else:
-        return strokes[ind]
+        return strokes[ind+y]
 
 print(Is_t_group(20, 6))
