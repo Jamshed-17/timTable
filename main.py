@@ -23,6 +23,7 @@ def GroupChekName(group_name):
 
 def Is_t_group(ID, ind):
     x = 0
+    chekkk = True
     num = 0
     if ind == 6:
         strokes = ""
@@ -36,12 +37,26 @@ def Is_t_group(ID, ind):
     for i in range(0, len(data["schedule"])):
         les = []
         num = 0
+        brakeFor = False
+        if chekkk == True:
+            for y in range(0, len(data["schedule"])):
+                if data["schedule"][y]["day"] == "Понедельник":
+                    i = y
+                    chekkk = False
+                    brakeFor = True
+                    break
+            #print(i, data["schedule"][i]["day"])
+
         for n in range(0, len(data["schedule"][i]["lessons"]) - 1):
             num = num + 1
-            if x == 0:
+
+            if x == 0 and brakeFor == False:
                 les.append(["*", data["schedule"][i]["date"][0:5], " - ", data["schedule"][i]["day"], "*"])
                 x = 1
-            if "name" in data["schedule"][i]["lessons"][n] and "/" in data["schedule"][i]["lessons"][n]["name"]:
+            elif brakeFor == True:
+                break
+
+            if "name" in data["schedule"][i]["lessons"][n] and "/" in data["schedule"][i]["lessons"][n]["name"] and "9:20" not in data["schedule"][i]["lessons"][n]["name"]:
                 nameInTwo = data["schedule"][i]["lessons"][n]["name"]
                 nameInTwo = nameInTwo.split("/")
                 nameOne = str(nameInTwo[0])
@@ -55,6 +70,10 @@ def Is_t_group(ID, ind):
                 officeOne = officeList[0]
                 officeTwo = officeList[1]
                 les.append(["\t"*5, "*", num, "* \n",nameOneList, "гр" , " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo])
+                '''elif "9:20" in data["schedule"][i]["lessons"][n]["name"]:
+                les.append(["*", num, "* ", "Нач - 9:20", data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " - ", data["schedule"][i]["lessons"][n]["office"]])'''
+            elif brakeFor == True:
+                break
             else:
                 if "name" in data["schedule"][i]["lessons"][n]:
                     for j in range(0, len(data["schedule"][i]["lessons"][n]["name"].split(" "))):
@@ -86,4 +105,4 @@ def Is_t_group(ID, ind):
     else:
         return strokes[ind]
 
-Is_t_group(10, 0)
+print(Is_t_group(20, 6))
