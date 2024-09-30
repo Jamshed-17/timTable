@@ -1,8 +1,8 @@
 import telebot
 from telebot import types
-from main import Is_t_group, Group_ID
+from main import Is_t_group, Group_ID, groupChoise, base_group_name
 
-bot = telebot.TeleBot("7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ")
+bot = telebot.TeleBot("7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ") # 7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo -- Тестовый, 7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ -- рабочий
 
 """@bot.message_handler(commands=['Group_list'])
 def group(message):
@@ -74,9 +74,11 @@ def firstKurs(message):
   bot.send_message(message.chat.id, text="Выбери группу".format(message.from_user),reply_markup=markup)
   bot.register_next_step_handler(message, getIdGroup);
 
+
 def getIdGroup(message):
   global GroupId
   GroupId = Group_ID(message.text)
+  groupChoise(message.text, str(message.chat.id))
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
   btn1 = types.KeyboardButton("Понедельник")
   btn2 = types.KeyboardButton("Вторник")
@@ -94,19 +96,19 @@ def getIdGroup(message):
 def func(message):
   try:
     if(message.text == "Понедельник"):
-        bot.send_message(message.chat.id, text=Is_t_group(GroupId, 0), parse_mode="Markdown")
+        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 0), parse_mode="Markdown")
     elif(message.text == "Вторник"):
-        bot.send_message(message.chat.id, text=Is_t_group(GroupId, 1), parse_mode="Markdown")
+        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 1), parse_mode="Markdown")
     elif (message.text == "Среда"):
-        bot.send_message(message.chat.id, text=Is_t_group(GroupId, 2), parse_mode="Markdown")
+        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 2), parse_mode="Markdown")
     elif (message.text == "Четверг"):
-        bot.send_message(message.chat.id, text=Is_t_group(GroupId, 3), parse_mode="Markdown")
+        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 3), parse_mode="Markdown")
     elif (message.text == "Пятница"):
-        bot.send_message(message.chat.id, text=Is_t_group(GroupId, 4), parse_mode="Markdown")
+        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 4), parse_mode="Markdown")
     elif (message.text == "Суббота"):
-        bot.send_message(message.chat.id, text=Is_t_group(GroupId, 5), parse_mode="Markdown")
+        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 5), parse_mode="Markdown")
     elif (message.text == "Вся неделя"):
-        bot.send_message(message.chat.id, text=Is_t_group(GroupId, 6), parse_mode="Markdown")
+        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 6), parse_mode="Markdown")
     elif (message.text == "Сменить группу"):
       bot.send_message(message.chat.id, text="Уверен, что хочешь сменить группу? Нажми на кнопку ещё раз, если да")
       bot.register_next_step_handler(message, start);
