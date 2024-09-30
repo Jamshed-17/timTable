@@ -1,4 +1,5 @@
 import requests
+import json
 
 def Group_ID(group_name):
     Group_list = requests.get("https://urtk-journal.ru/api/groups/urtk")
@@ -47,11 +48,11 @@ def Is_t_group(ID, ind):
                     break'''
             #print(i, data["schedule"][i]["day"])
 
-        for n in range(0, len(data["schedule"][i]["lessons"])):
+        for n in range(0, len(data["schedule"][i]["lessons"])-1):
             num = num + 1
 
             if x == 0:
-                les.append(["*", data["schedule"][i]["date"][0:5], " - ", data["schedule"][i]["day"], "*"])
+                les.append(["*", data["schedule"][i]["date"][0:5], " - ", data["schedule"][i]["day"], "*", f"({data["name"]})"])
                 x = 1
 
             if "name" in data["schedule"][i]["lessons"][n] and "/" in data["schedule"][i]["lessons"][n]["name"] and "ВПР" not in data["schedule"][i]["lessons"][n]["name"] and "9:20" not in data["schedule"][i]["lessons"][n]["name"]:
@@ -112,3 +113,22 @@ for i in range(0, len(Group_data)):
         for k in range(0, 7):
             print(Is_t_group(Group_data[i]["groups"][n]["id"], k))'''
 #print(Is_t_group(16, 6))
+
+def groupChoise(G_name: str, ID: str):
+    with open("Data/DataBaseStudent.json", "r") as read_file:
+        data = dict(json.load(read_file))
+        studentGroupChoise = {"groupName":G_name}
+        if ID in data.keys():
+            if G_name != data[ID]["groupName"]:
+                data[ID] = studentGroupChoise
+            else:
+                pass
+        else:
+            data[ID] = studentGroupChoise
+        with open('Data/DataBaseStudent.json', "w", encoding='utf-8') as write_file:
+            json.dump(data, write_file, ensure_ascii=False)
+
+def base_group_name(id):
+    with open("Data/DataBaseStudent.json", "r") as read_file:
+        data = dict(json.load(read_file))
+        return Group_ID(data[id]["groupName"])
