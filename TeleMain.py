@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 from main import Is_t_group, Group_ID
 
-bot = telebot.TeleBot("7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ")
+bot = telebot.TeleBot("")
 
 """@bot.message_handler(commands=['Group_list'])
 def group(message):
