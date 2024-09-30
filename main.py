@@ -52,7 +52,7 @@ def Is_t_group(ID, ind):
             num = num + 1
 
             if x == 0:
-                les.append(["*", data["schedule"][i]["date"][0:5], " - ", data["schedule"][i]["day"], "*", f"({data["name"]})"])
+                les.append(["*", data["schedule"][i]["date"][0:5], " - ", data["schedule"][i]["day"], "* ", "(", data["name"], ")"])
                 x = 1
 
             if "name" in data["schedule"][i]["lessons"][n] and "/" in data["schedule"][i]["lessons"][n]["name"] and "ВПР" not in data["schedule"][i]["lessons"][n]["name"] and "9:20" not in data["schedule"][i]["lessons"][n]["name"]:
