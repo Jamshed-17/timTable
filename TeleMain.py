@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 from main import Is_t_group, Group_ID, groupChoise, base_group_name
 
-bot = telebot.TeleBot("7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ") # 7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo -- Тестовый, 7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ -- рабочий
+bot = telebot.TeleBot("7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo") # 7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo -- Тестовый, 7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ -- рабочий
 
 """@bot.message_handler(commands=['Group_list'])
 def group(message):
@@ -94,28 +94,14 @@ def getIdGroup(message):
 
 @bot.message_handler(content_types=['text'])
 def func(message):
+  week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Вся неделя"]
   try:
-    if(message.text == "Понедельник"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 0), parse_mode="Markdown")
-    elif(message.text == "Вторник"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 1), parse_mode="Markdown")
-    elif (message.text == "Среда"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 2), parse_mode="Markdown")
-    elif (message.text == "Четверг"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 3), parse_mode="Markdown")
-    elif (message.text == "Пятница"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 4), parse_mode="Markdown")
-    elif (message.text == "Суббота"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 5), parse_mode="Markdown")
-    elif (message.text == "Вся неделя"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 6), parse_mode="Markdown")
+    if message.text in week_days:
+        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), week_days.index(message.text)), parse_mode="Markdown")
     elif (message.text == "Сменить группу"):
-      bot.send_message(message.chat.id, text="Уверен, что хочешь сменить группу? Нажми на кнопку ещё раз, если да")
-      bot.register_next_step_handler(message, start);
-    else:
-      bot.send_message(message.chat.id, text="Либо ты накосячил, либо я. Давай начнём с начала, нажми на /start")
+      start(message);
   except:
-    bot.send_message(message.chat.id, text="Либо ты накосячил, либо я. Давай начнём с начала, нажми на /start")
+    bot.send_message(message.chat.id, text="Либо твой косяк, либо мой. Давай начнём с начала, нажми на /start")
 
 
 bot.infinity_polling()

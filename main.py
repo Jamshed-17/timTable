@@ -54,8 +54,7 @@ def Is_t_group(ID, ind):
             if x == 0:
                 les.append(["*", data["schedule"][i]["date"][0:5], " - ", data["schedule"][i]["day"], "* ", "(", data["name"], ")"])
                 x = 1
-
-            if "name" in data["schedule"][i]["lessons"][n] and "/" in data["schedule"][i]["lessons"][n]["name"] and "ВПР" not in data["schedule"][i]["lessons"][n]["name"] and "9:20" not in data["schedule"][i]["lessons"][n]["name"]:
+            try:
                 nameInTwo = data["schedule"][i]["lessons"][n]["name"]
                 nameInTwo = nameInTwo.split("/")
                 nameOne = str(nameInTwo[0])
@@ -71,7 +70,7 @@ def Is_t_group(ID, ind):
                 les.append(["\t"*5, "*", num, "* \n",nameOneList, "гр" , " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo])
                 '''elif "9:20" in data["schedule"][i]["lessons"][n]["name"]:
                 les.append(["*", num, "* ", "Нач - 9:20", data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " - ", data["schedule"][i]["lessons"][n]["office"]])'''
-            else:
+            except:
                 if "name" in data["schedule"][i]["lessons"][n]:
                     for j in range(0, len(data["schedule"][i]["lessons"][n]["name"].split(" "))):
                         if j == 0:
