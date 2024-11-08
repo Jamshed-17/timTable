@@ -7,7 +7,6 @@ def Group_ID(group_name):
     for i in range(0, len(Group_data)):
         for n in range(0, len(Group_data[i]["groups"])):
             if group_name == Group_data[i]["groups"][n]["name"]:
-                #print(Group_data[i]["groups"][n]["name"], Group_data[i]["groups"][n]["id"])
                 return Group_data[i]["groups"][n]["id"]
 
 def GroupChekName(group_name):
@@ -16,38 +15,68 @@ def GroupChekName(group_name):
     for i in range(0, len(Group_data)):
         for n in range(0, len(Group_data[i]["groups"])):
             if group_name == Group_data[i]["groups"][n]["name"]:
-                #print(Group_data[i]["groups"][n]["name"], Group_data[i]["groups"][n]["id"])
                 return True
             else:
                 pass
     return False
 
-def Is_t_group(ID, ind):
+
+def find_monday(data):
+    week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"]
+    for i in range(0, len(week_days)):
+        if week_days[i] == data["schedule"][0]["day"]:
+            pass
+        
+        
+
+
+def Is_t_group(ID, text):
+    #Получаем доступ к объекту
+    client = requests.get(f"https://urtk-journal.ru/api/schedule/group/{ID}")
+    #Форматируем его под себя
+    data = client.json()
+    
+    for i in range(0, len(data["schedule"])):
+        if data["schedule"][i]["day"] == text:
+            checking = True
+            break
+        else:
+            checking = False
+            
+    if checking == False:
+        return f"Дня '{text}' нет в расписании"
+    
+    if text != "Вся неделя":
+        week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"]
+        ind = week_days.index(text)            
+            
+        index_day = week_days.index(data["schedule"][0]["day"])
+        for i in range(len(data["schedule"])):
+            if data["schedule"][i]["day"] == "Понедельник":
+                check = True
+                break
+            else:
+                check = False
+            
+        if check == True:
+            ind += index_day
+        elif check == False:
+            ind -= index_day
+        
+            
+    else: 
+        ind = 6
     x = 0
     y = 0
-    chekkk = True
     num = 0
     if ind == 6:
         strokes = ""
     else:
         strokes = []
-    #Получаем доступ к объекту
-    client = requests.get(f"https://urtk-journal.ru/api/schedule/group/{ID}")
-    #Форматируем его под себя
-    data = client.json()
     #Выводим [дату, день недели, предмет]
     for i in range(0, len(data["schedule"])):
         les = []
         num = 0
-        '''if chekkk == True:
-            for y in range(0, len(data["schedule"])):
-                if data["schedule"][y]["day"] == "Понедельник":
-                    i = y
-                    chekkk = False
-                    brakeFor = True
-                    break'''
-            #print(i, data["schedule"][i]["day"])
-
         for n in range(0, len(data["schedule"][i]["lessons"])-1):
             num = num + 1
 
@@ -68,8 +97,6 @@ def Is_t_group(ID, ind):
                 officeOne = officeList[0]
                 officeTwo = officeList[1]
                 les.append(["\t"*5, "*", num, "* \n",nameOneList, "гр" , " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo])
-                '''elif "9:20" in data["schedule"][i]["lessons"][n]["name"]:
-                les.append(["*", num, "* ", "Нач - 9:20", data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " - ", data["schedule"][i]["lessons"][n]["office"]])'''
             except:
                 if "name" in data["schedule"][i]["lessons"][n]:
                     for j in range(0, len(data["schedule"][i]["lessons"][n]["name"].split(" "))):
@@ -102,17 +129,6 @@ def Is_t_group(ID, ind):
     else:
         return strokes[ind+y]
 
-
-
-'''Group_list = requests.get("https://urtk-journal.ru/api/groups/urtk")
-Group_data = Group_list.json()
-
-for i in range(0, len(Group_data)):
-    for n in range(0, len(Group_data[i]["groups"])):
-        for k in range(0, 7):
-            print(Is_t_group(Group_data[i]["groups"][n]["id"], k))'''
-#print(Is_t_group(16, 6))
-
 def groupChoise(G_name: str, ID: str):
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
@@ -131,3 +147,5 @@ def base_group_name(id):
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
         return Group_ID(data[id]["groupName"])
+
+# print(Is_t_group(16, "Вторник"))
