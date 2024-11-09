@@ -20,50 +20,17 @@ def GroupChekName(group_name):
                 pass
     return False
 
-
-def find_monday(data):
-    week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"]
-    for i in range(0, len(week_days)):
-        if week_days[i] == data["schedule"][0]["day"]:
-            pass
-        
-        
-
-
 def Is_t_group(ID, text):
     #Получаем доступ к объекту
     client = requests.get(f"https://urtk-journal.ru/api/schedule/group/{ID}")
     #Форматируем его под себя
     data = client.json()
-    
-    for i in range(0, len(data["schedule"])):
-        if data["schedule"][i]["day"] == text:
-            checking = True
-            break
-        else:
-            checking = False
-            
-    if checking == False:
-        return f"Дня '{text}' нет в расписании"
-    
+       
     if text != "Вся неделя":
-        week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"]
-        ind = week_days.index(text)            
-            
-        index_day = week_days.index(data["schedule"][0]["day"])
         for i in range(len(data["schedule"])):
-            if data["schedule"][i]["day"] == "Понедельник":
-                check = True
+            if data["schedule"][i]["day"] == text:
+                ind = i 
                 break
-            else:
-                check = False
-            
-        if check == True:
-            ind += index_day
-        elif check == False:
-            ind -= index_day
-        
-            
     else: 
         ind = 6
     x = 0
@@ -88,15 +55,15 @@ def Is_t_group(ID, text):
                 nameInTwo = nameInTwo.split("/")
                 nameOne = str(nameInTwo[0])
                 nameOne = nameOne.split(" ")
-                nameOneList = nameOne[0] + "|" + nameOne[1] #nameOneList - для конечного списка - первая подгруппа
+                nameOneList = nameOne[0] + " | " + nameOne[1] #nameOneList - для конечного списка - первая подгруппа
                 nameTwo = str(nameInTwo[1])
                 nameTwo = nameTwo.split(" ")
-                nameTwoList = nameTwo[0] + "|" + nameTwo[1] #nameTwoList - тоже для конечного списка - вторая подгуппа
+                nameTwoList = nameTwo[0] + " | " + nameTwo[1] #nameTwoList - тоже для конечного списка - вторая подгуппа
                 officeList = data["schedule"][i]["lessons"][n]["office"]
                 officeList = officeList.split("/")
                 officeOne = officeList[0]
                 officeTwo = officeList[1]
-                les.append(["\t"*5, "*", num, "* \n",nameOneList, "гр" , " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo])
+                les.append(["  "*9, "*", num, "* \n",nameOneList, "гр" , " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo, "\n"])
             except:
                 if "name" in data["schedule"][i]["lessons"][n]:
                     for j in range(0, len(data["schedule"][i]["lessons"][n]["name"].split(" "))):
@@ -109,7 +76,6 @@ def Is_t_group(ID, text):
 
         x = 0
         if ind != 6:
-
             stroke = ""
             for ik in range(0, len(les)):
                 for j in range(0, len(les[ik])):
@@ -127,7 +93,7 @@ def Is_t_group(ID, text):
     if ind == 6:
          return strokes
     else:
-        return strokes[ind+y]
+        return strokes[ind]
 
 def groupChoise(G_name: str, ID: str):
     with open("Data/DataBaseStudent.json", "r") as read_file:
@@ -147,5 +113,3 @@ def base_group_name(id):
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
         return Group_ID(data[id]["groupName"])
-
-# print(Is_t_group(16, "Вторник"))
