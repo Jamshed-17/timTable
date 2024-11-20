@@ -4,13 +4,6 @@ from main import Is_t_group, Group_ID, groupChoise, base_group_name
 
 bot = telebot.TeleBot("7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ") # 7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo -- Тестовый, 7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ -- рабочий
 
-"""@bot.message_handler(commands=['Group_list'])
-def group(message):
-  bot.send_message(message.chat.id, text="Напиши название своей группы (большими без побелов)".format(message.from_user))
-  group_name = message.upper()
-  GroupId = Group_ID(group_name)"""
-
-
 @bot.message_handler(commands=['start'])
 def start(message):
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -21,20 +14,6 @@ def start(message):
   markup.add(butn1, butn2, butn3, butn4,)
   bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
   bot.register_next_step_handler(message, firstKurs);
-
-
-'''def main(message):
-  bot.send_message(message.chat.id, text="""Напиши название своей группы. На выбор: 
-  
-1АС1 \t 1ИС1 \t 1С1 \t 1ТО1 \t1ТО2
-
-2АС1 \t 2ИС1 \t 2ИС2 \t 2ОС1 \t 2С1
-
-3АС1 \t 3ИС1 \t 3ИС2 \t 3ОС1 \t 3С1 \t 3Э1
-
-4ИС1 \t 4ОС1 \t 4С1 \t 4ИС2 \t 4АС1""".format(message.from_user))
-  bot.register_next_step_handler(message, start);'''
-
 
 def firstKurs(message):
   if message.text == "1 курс":
@@ -94,28 +73,14 @@ def getIdGroup(message):
 
 @bot.message_handler(content_types=['text'])
 def func(message):
+  week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Вся неделя"]
   try:
-    if(message.text == "Понедельник"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 0), parse_mode="Markdown")
-    elif(message.text == "Вторник"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 1), parse_mode="Markdown")
-    elif (message.text == "Среда"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 2), parse_mode="Markdown")
-    elif (message.text == "Четверг"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 3), parse_mode="Markdown")
-    elif (message.text == "Пятница"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 4), parse_mode="Markdown")
-    elif (message.text == "Суббота"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 5), parse_mode="Markdown")
-    elif (message.text == "Вся неделя"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 6), parse_mode="Markdown")
+    if message.text in week_days:
+        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), str(message.text)), parse_mode="Markdown")
     elif (message.text == "Сменить группу"):
-      bot.send_message(message.chat.id, text="Уверен, что хочешь сменить группу? Нажми на кнопку ещё раз, если да")
-      bot.register_next_step_handler(message, start);
-    else:
-      bot.send_message(message.chat.id, text="Либо ты накосячил, либо я. Давай начнём с начала, нажми на /start")
+      start(message)
   except:
-    bot.send_message(message.chat.id, text="Либо ты накосячил, либо я. Давай начнём с начала, нажми на /start")
+    bot.send_message(message.chat.id, text="Либо твой косяк, либо мой. Давай начнём с начала, нажми на /start")
 
 
 bot.infinity_polling()
