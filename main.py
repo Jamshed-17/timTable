@@ -34,7 +34,6 @@ def Is_t_group(ID, text):
     else: 
         ind = 6
     x = 0
-    y = 0
     num = 0
     if ind == 6:
         strokes = ""
@@ -70,7 +69,10 @@ def Is_t_group(ID, text):
                         if j == 0:
                             pass
                     if x == 1 :
-                        les.append(["*", num, "* ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " - ", data["schedule"][i]["lessons"][n]["office"]])
+                        if data["schedule"][i]["lessons"][n]["name"].split(" ")[1] == "1" or data["schedule"][i]["lessons"][n]["name"].split(" ")[1] == "2":
+                            les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0]," ", data["schedule"][i]["lessons"][n]["name"].split(" ")[1], "гр" , " - ", data["schedule"][i]["lessons"][n]["office"]])
+                        else:
+                            les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " - ", data["schedule"][i]["lessons"][n]["office"]])
                 else:
                     les.append(str(num))
 
