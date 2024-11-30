@@ -97,10 +97,22 @@ def Is_t_group(ID, text):
     else:
         return strokes[ind]
 
-def groupChoise(G_name: str, ID: str):
+def all_users_cout():
+    cout = "Все пользователи:\n"
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
-        studentGroupChoise = {"groupName":G_name}
+        IDs = list(data.keys())
+        for i in IDs:
+            cout += f"@{data[i]["username"]}\n"
+            
+        cout = cout[0:-1]
+    return cout
+        
+
+def groupChoise(G_name: str, ID: str, username:str):
+    with open("Data/DataBaseStudent.json", "r") as read_file:
+        data = dict(json.load(read_file))
+        studentGroupChoise = {"groupName":G_name, "username":username}
         if ID in data.keys():
             if G_name != data[ID]["groupName"]:
                 data[ID] = studentGroupChoise

@@ -1,6 +1,6 @@
 import telebot
 from telebot import types
-from main import Is_t_group, Group_ID, groupChoise, base_group_name
+from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_cout
 
 bot = telebot.TeleBot("7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ") # 7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo -- Тестовый, 7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ -- рабочий
 
@@ -22,16 +22,16 @@ def start(message):
 def admin_menu(message):
   #Меню для админа, в котором можно посомтреть расписание, пользователей и опубликовать что-то
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-  gr1 = types.KeyboardButton("Смотреть расписание")
-  gr2 = types.KeyboardButton("Посмотреть пользователей")
-  gr3 = types.KeyboardButton("Опубликовать новость")
+  gr1 = types.KeyboardButton("🗓️")
+  gr2 = types.KeyboardButton("👥")
+  gr3 = types.KeyboardButton("🗞️")
   markup.add(gr1, gr2, gr3)
   bot.send_message(message.chat.id, text="Выбери действие".format(message.from_user), reply_markup=markup)
   bot.register_next_step_handler(message, admin_urls)
   
 def admin_urls(message):
   #Здесь маршрутизация для админ меню
-  if message.text == "Смотреть расписание":
+  if message.text == "🗓️":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     butn1 = types.KeyboardButton("1 курс")
     butn2 = types.KeyboardButton("2 курс")
@@ -40,8 +40,11 @@ def admin_urls(message):
     markup.add(butn1, butn2, butn3, butn4,)
     bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
     bot.register_next_step_handler(message, groups)
+  elif message.text == "👥":
+      bot.send_message(message.chat.id, text=f"{all_users_cout()}".format(message.from_user))
+      start(message)
   else:
-    bot.send_message(message.chat.id, text="Пока не сделано, посмотри расписание".format(message.from_user), reply_markup=markup)
+    bot.send_message(message.chat.id, text="Пока не сделано, посмотри расписание".format(message.from_user))
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     butn1 = types.KeyboardButton("1 курс")
     butn2 = types.KeyboardButton("2 курс")
@@ -91,11 +94,10 @@ def groups(message):
   bot.send_message(message.chat.id, text="Выбери группу".format(message.from_user),reply_markup=markup)
   bot.register_next_step_handler(message, getIdGroup);
 
-
 def getIdGroup(message):
   global GroupId
   GroupId = Group_ID(message.text)
-  groupChoise(message.text, str(message.chat.id))
+  groupChoise(message.text, str(message.chat.id), str(message.chat.username))
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
   btn1 = types.KeyboardButton("Понедельник")
   btn2 = types.KeyboardButton("Вторник")
