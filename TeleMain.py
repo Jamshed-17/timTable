@@ -44,7 +44,7 @@ def admin_urls(message):
       bot.send_message(message.chat.id, text=f"{all_users_cout()}".format(message.from_user))
       start(message)
   else:
-    bot.send_message(message.chat.id, text="Пока не сделано, посмотри расписание".format(message.from_user))
+    bot.send_message(message.chat.id, text="Неизвестная команда. Посмотри лучше расписание".format(message.from_user))
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     butn1 = types.KeyboardButton("1 курс")
     butn2 = types.KeyboardButton("2 курс")

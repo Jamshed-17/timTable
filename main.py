@@ -102,8 +102,10 @@ def all_users_cout():
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
         IDs = list(data.keys())
+        x = 0
         for i in IDs:
-            cout += f"@{data[i]["username"]}\n"
+            x += 1
+            cout += f"{x}. @{data[i]["username"]} - {data[i]["groupName"]}\n"
             
         cout = cout[0:-1]
     return cout
