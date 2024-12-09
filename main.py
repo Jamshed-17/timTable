@@ -64,17 +64,24 @@ def Is_t_group(ID, text):
                 officeTwo = officeList[1]
                 les.append(["  "*9, "*", num, "* \n",nameOneList, "гр" , " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo, "\n"])
             except:
-                if "name" in data["schedule"][i]["lessons"][n]:
-                    for j in range(0, len(data["schedule"][i]["lessons"][n]["name"].split(" "))):
-                        if j == 0:
-                            pass
-                    if x == 1 :
-                        if data["schedule"][i]["lessons"][n]["name"].split(" ")[1] == "1" or data["schedule"][i]["lessons"][n]["name"].split(" ")[1] == "2":
-                            les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0]," ", data["schedule"][i]["lessons"][n]["name"].split(" ")[1], "гр" , " - ", data["schedule"][i]["lessons"][n]["office"]])
-                        else:
-                            les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " - ", data["schedule"][i]["lessons"][n]["office"]])
-                else:
-                    les.append(str(num))
+                try:
+                    if "name" in data["schedule"][i]["lessons"][n]:
+                        for j in range(0, len(data["schedule"][i]["lessons"][n]["name"].split(" "))):
+                            if j == 0:
+                                pass
+                        if x == 1 :
+                            if data["schedule"][i]["lessons"][n]["name"].split(" ")[1] == "1" or data["schedule"][i]["lessons"][n]["name"].split(" ")[1] == "2":
+                                les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0]," ", data["schedule"][i]["lessons"][n]["name"].split(" ")[1], "гр" , " - ", data["schedule"][i]["lessons"][n]["office"]])
+                            else:
+                                les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " - ", data["schedule"][i]["lessons"][n]["office"]])
+                    else:
+                        les.append(str(num))
+                except:
+                    if "name" in data["schedule"][i]["lessons"][n]:
+                        les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0]])
+                    else:
+                        les.append(str(num))
+                    
 
         x = 0
         if ind != 6:
@@ -93,7 +100,7 @@ def Is_t_group(ID, text):
             strokes = strokes + stroke + "\n"
 
     if ind == 6:
-         return strokes
+        return strokes
     else:
         return strokes[ind]
 
