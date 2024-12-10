@@ -1,42 +1,67 @@
 import telebot
+import time
 from telebot import types
-from main import Is_t_group, Group_ID, groupChoise, base_group_name
+import datetime
+from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_cout, base_open_admin, time_check
+from config import work_TOKEN, test_TOKEN
 
-bot = telebot.TeleBot("7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ") # 7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo -- Тестовый, 7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ -- рабочий
-
-"""@bot.message_handler(commands=['Group_list'])
-def group(message):
-  bot.send_message(message.chat.id, text="Напиши название своей группы (большими без побелов)".format(message.from_user))
-  group_name = message.upper()
-  GroupId = Group_ID(group_name)"""
+bot = telebot.TeleBot(test_TOKEN)
 
 
 @bot.message_handler(commands=['start'])
 def start(message):
+  if message.chat.username == "Jamshed17":
+    bot.send_message(message.chat.id, text="Админка есть".format(message.from_user))
+    admin_menu(message)
+  else:
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    butn1 = types.KeyboardButton("1 курс")
+    butn2 = types.KeyboardButton("2 курс")
+    butn3 = types.KeyboardButton("3 курс")
+    butn4 = types.KeyboardButton("4 курс")
+    markup.add(butn1, butn2, butn3, butn4,)
+    bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
+    bot.register_next_step_handler(message, groups)
+
+def admin_menu(message):
+  #Меню для админа, в котором можно посомтреть расписание, пользователей и опубликовать что-то
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-  butn1 = types.KeyboardButton("1 курс")
-  butn2 = types.KeyboardButton("2 курс")
-  butn3 = types.KeyboardButton("3 курс")
-  butn4 = types.KeyboardButton("4 курс")
-  markup.add(butn1, butn2, butn3, butn4,)
-  bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
-  bot.register_next_step_handler(message, firstKurs);
-
-
-'''def main(message):
-  bot.send_message(message.chat.id, text="""Напиши название своей группы. На выбор: 
+  gr1 = types.KeyboardButton("🗓️")
+  gr2 = types.KeyboardButton("👥")
+  gr3 = types.KeyboardButton("🗞️")
+  markup.add(gr1, gr2, gr3)
+  bot.send_message(message.chat.id, text="Выбери действие".format(message.from_user), reply_markup=markup)
+  bot.register_next_step_handler(message, admin_urls)
   
-1АС1 \t 1ИС1 \t 1С1 \t 1ТО1 \t1ТО2
+def admin_urls(message):
+  #Здесь маршрутизация для админ меню
+  if message.text == "🗓️":
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    butn1 = types.KeyboardButton("1 курс")
+    butn2 = types.KeyboardButton("2 курс")
+    butn3 = types.KeyboardButton("3 курс")
+    butn4 = types.KeyboardButton("4 курс")
+    markup.add(butn1, butn2, butn3, butn4,)
+    bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
+    bot.register_next_step_handler(message, groups)
+  elif message.text == "👥":
+      markup = telebot.types.InlineKeyboardMarkup(row_width=1)
+      but1 = telebot.types.InlineKeyboardButton("Give BD", callback_data="BD_cout")
+      markup.add(but1)      
+      bot.send_message(message.chat.id, text=f"{all_users_cout()}".format(message.from_user), reply_markup = markup)
+      start(message)
+  else:
+    bot.send_message(message.chat.id, text="Неизвестная команда. Посмотри лучше расписание".format(message.from_user))
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    butn1 = types.KeyboardButton("1 курс")
+    butn2 = types.KeyboardButton("2 курс")
+    butn3 = types.KeyboardButton("3 курс")
+    butn4 = types.KeyboardButton("4 курс")
+    markup.add(butn1, butn2, butn3, butn4,)
+    bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
+    bot.register_next_step_handler(message, groups)
 
-2АС1 \t 2ИС1 \t 2ИС2 \t 2ОС1 \t 2С1
-
-3АС1 \t 3ИС1 \t 3ИС2 \t 3ОС1 \t 3С1 \t 3Э1
-
-4ИС1 \t 4ОС1 \t 4С1 \t 4ИС2 \t 4АС1""".format(message.from_user))
-  bot.register_next_step_handler(message, start);'''
-
-
-def firstKurs(message):
+def groups(message):
   if message.text == "1 курс":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     gr1 = types.KeyboardButton("1АС1")
@@ -74,11 +99,10 @@ def firstKurs(message):
   bot.send_message(message.chat.id, text="Выбери группу".format(message.from_user),reply_markup=markup)
   bot.register_next_step_handler(message, getIdGroup);
 
-
 def getIdGroup(message):
   global GroupId
   GroupId = Group_ID(message.text)
-  groupChoise(message.text, str(message.chat.id))
+  groupChoise(message.text, str(message.chat.id), str(message.chat.username), datetime.datetime.now().strftime('(%Y-%m-%d)%H:%M:%S'))
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
   btn1 = types.KeyboardButton("Понедельник")
   btn2 = types.KeyboardButton("Вторник")
@@ -91,31 +115,27 @@ def getIdGroup(message):
   markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
   bot.send_message(message.chat.id, text="На какой день недели тебе выдать расписание?".format(message.from_user), reply_markup=markup)
 
-
 @bot.message_handler(content_types=['text'])
 def func(message):
-  try:
-    if(message.text == "Понедельник"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 0), parse_mode="Markdown")
-    elif(message.text == "Вторник"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 1), parse_mode="Markdown")
-    elif (message.text == "Среда"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 2), parse_mode="Markdown")
-    elif (message.text == "Четверг"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 3), parse_mode="Markdown")
-    elif (message.text == "Пятница"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 4), parse_mode="Markdown")
-    elif (message.text == "Суббота"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 5), parse_mode="Markdown")
-    elif (message.text == "Вся неделя"):
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), 6), parse_mode="Markdown")
-    elif (message.text == "Сменить группу"):
-      bot.send_message(message.chat.id, text="Уверен, что хочешь сменить группу? Нажми на кнопку ещё раз, если да")
-      bot.register_next_step_handler(message, start);
-    else:
-      bot.send_message(message.chat.id, text="Либо ты накосячил, либо я. Давай начнём с начала, нажми на /start")
-  except:
-    bot.send_message(message.chat.id, text="Либо ты накосячил, либо я. Давай начнём с начала, нажми на /start")
+    time.sleep(0.5)
+    week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Вся неделя"]
+    try:
+      if message.text in week_days:
+        now = datetime.datetime.now().strftime('(%Y-%m-%d)%H:%M:%S')
+        if time_check(now, str(message.chat.id)) == True:
+          bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), str(message.text)), parse_mode="Markdown")
+        else:
+          bot.send_message(message.chat.id, text="Слишком много запросов за эту секунду. Давай чуть помедленнее")
+          start(message)
+      elif (message.text == "Сменить группу"):
+        start(message)
+    except:
+      bot.send_message(message.chat.id, text="Либо твой косяк, либо мой. Давай начнём с начала, нажми на /start")
+  
 
 
+@bot.callback_query_handler(func=lambda call: call.data == "BD_cout")
+def BD_cout_func(call: types.CallbackQuery):
+    bot.send_message(call.message.chat.id, text=f"{str(base_open_admin()).replace("'", '"')}")
+   
 bot.infinity_polling()
