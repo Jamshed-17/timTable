@@ -1,7 +1,9 @@
 import requests
 import json
+import datetime
 
 def Group_ID(group_name):
+    #Выдаёт id группы, чтобы выдавать из API
     Group_list = requests.get("https://urtk-journal.ru/api/groups/urtk")
     Group_data = Group_list.json()
     for i in range(0, len(Group_data)):
@@ -10,6 +12,7 @@ def Group_ID(group_name):
                 return Group_data[i]["groups"][n]["id"]
 
 def GroupChekName(group_name):
+    #Проверяет наличие такой группы в API
     Group_list = requests.get("https://urtk-journal.ru/api/groups/urtk")
     Group_data = Group_list.json()
     for i in range(0, len(Group_data)):
@@ -21,6 +24,9 @@ def GroupChekName(group_name):
     return False
 
 def Is_t_group(ID, text):
+    """
+    Преобразовывает данные из API в строку для вывода расисания
+    """
     #Получаем доступ к объекту
     client = requests.get(f"https://urtk-journal.ru/api/schedule/group/{ID}")
     #Форматируем его под себя
@@ -50,19 +56,24 @@ def Is_t_group(ID, text):
                 les.append(["*", data["schedule"][i]["date"][0:5], " - ", data["schedule"][i]["day"], "* ", "(", data["name"], ")"])
                 x = 1
             try:
-                nameInTwo = data["schedule"][i]["lessons"][n]["name"]
-                nameInTwo = nameInTwo.split("/")
-                nameOne = str(nameInTwo[0])
-                nameOne = nameOne.split(" ")
-                nameOneList = nameOne[0] + " | " + nameOne[1] #nameOneList - для конечного списка - первая подгруппа
-                nameTwo = str(nameInTwo[1])
-                nameTwo = nameTwo.split(" ")
-                nameTwoList = nameTwo[0] + " | " + nameTwo[1] #nameTwoList - тоже для конечного списка - вторая подгуппа
-                officeList = data["schedule"][i]["lessons"][n]["office"]
-                officeList = officeList.split("/")
-                officeOne = officeList[0]
-                officeTwo = officeList[1]
-                les.append(["  "*9, "*", num, "* \n",nameOneList, "гр" , " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo, "\n"])
+                if "Кл. час" in data["schedule"][i]["lessons"][n]["name"]:
+                    if "name" in data["schedule"][i]["lessons"][n] and "office" in data["schedule"][i]["lessons"][n]:
+                        les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"], " - ", data["schedule"][i]["lessons"][n]["office"]])
+           
+                else:
+                    nameInTwo = data["schedule"][i]["lessons"][n]["name"]
+                    nameInTwo = nameInTwo.split("/")
+                    nameOne = str(nameInTwo[0])
+                    nameOne = nameOne.split(" ")
+                    nameOneList = nameOne[0] + " | " + nameOne[1] #nameOneList - для конечного списка - первая подгруппа
+                    nameTwo = str(nameInTwo[1])
+                    nameTwo = nameTwo.split(" ")
+                    nameTwoList = nameTwo[0] + " | " + nameTwo[1] #nameTwoList - тоже для конечного списка - вторая подгуппа
+                    officeList = data["schedule"][i]["lessons"][n]["office"]
+                    officeList = officeList.split("/")
+                    officeOne = officeList[0]
+                    officeTwo = officeList[1]
+                    les.append(["  "*9, "*", num, "* \n",nameOneList, "гр" , " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo, "\n"])
             except:
                 try:
                     if "name" in data["schedule"][i]["lessons"][n]:
@@ -82,7 +93,6 @@ def Is_t_group(ID, text):
                     else:
                         les.append(str(num))
                     
-
         x = 0
         if ind != 6:
             stroke = ""
@@ -105,6 +115,7 @@ def Is_t_group(ID, text):
         return strokes[ind]
 
 def all_users_cout():
+    #Выводит всех пользователей с выранной гоуппой (Админ панель)
     cout = "Все пользователи:\n"
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
@@ -119,6 +130,7 @@ def all_users_cout():
         
 
 def groupChoise(G_name: str, ID: str, username:str):
+    #Добавляет запись в базу данных
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
         studentGroupChoise = {"groupName":G_name, "username":username}
@@ -133,6 +145,13 @@ def groupChoise(G_name: str, ID: str, username:str):
             json.dump(data, write_file, ensure_ascii=False)
 
 def base_group_name(id):
+    #Находит запись пользователя в БД и возвращает последнюю выбранную им группу
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
         return Group_ID(data[id]["groupName"])
+    
+def base_open_admin():
+    #Выводит базу данных, для сохранения (Админ панель)
+    with open("Data/DataBaseStudent.json", "r") as read_file:
+        data = dict(json.load(read_file))
+    return data

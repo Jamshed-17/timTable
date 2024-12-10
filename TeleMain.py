@@ -1,8 +1,11 @@
 import telebot
 from telebot import types
-from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_cout
+import datetime
+from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_cout, base_open_admin
 
-bot = telebot.TeleBot("7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ") # 7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo -- Тестовый, 7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ -- рабочий
+bot = telebot.TeleBot("7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo")
+                     # 7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo -- Тестовый, 
+                     # 7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ -- рабочий
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -41,7 +44,10 @@ def admin_urls(message):
     bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
     bot.register_next_step_handler(message, groups)
   elif message.text == "👥":
-      bot.send_message(message.chat.id, text=f"{all_users_cout()}".format(message.from_user))
+      markup = telebot.types.InlineKeyboardMarkup(row_width=1)
+      but1 = telebot.types.InlineKeyboardButton("Give BD", callback_data="BD_cout")
+      markup.add(but1)      
+      bot.send_message(message.chat.id, text=f"{all_users_cout()}".format(message.from_user), reply_markup = markup)
       start(message)
   else:
     bot.send_message(message.chat.id, text="Неизвестная команда. Посмотри лучше расписание".format(message.from_user))
@@ -53,8 +59,6 @@ def admin_urls(message):
     markup.add(butn1, butn2, butn3, butn4,)
     bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
     bot.register_next_step_handler(message, groups)
-    
-
 
 def groups(message):
   if message.text == "1 курс":
@@ -110,7 +114,6 @@ def getIdGroup(message):
   markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
   bot.send_message(message.chat.id, text="На какой день недели тебе выдать расписание?".format(message.from_user), reply_markup=markup)
 
-
 @bot.message_handler(content_types=['text'])
 def func(message):
   week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Вся неделя"]
@@ -122,5 +125,8 @@ def func(message):
   except:
     bot.send_message(message.chat.id, text="Либо твой косяк, либо мой. Давай начнём с начала, нажми на /start")
 
-
+@bot.callback_query_handler(func=lambda call: call.data == "BD_cout")
+def BD_cout_func(call: types.CallbackQuery):
+    bot.send_message(call.message.chat.id, text=f"{str(base_open_admin()).replace("'", '"')}")
+   
 bot.infinity_polling()
