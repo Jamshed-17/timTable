@@ -2,10 +2,10 @@ import telebot
 import time
 from telebot import types
 import datetime
-from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_cout, base_open_admin, time_check
+from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_cout, base_open_admin, time_check, all_id
 from config import work_TOKEN, test_TOKEN
 
-bot = telebot.TeleBot(test_TOKEN)
+bot = telebot.TeleBot(work_TOKEN)
 
 
 @bot.message_handler(commands=['start'])
@@ -45,21 +45,28 @@ def admin_urls(message):
     bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
     bot.register_next_step_handler(message, groups)
   elif message.text == "👥":
-      markup = telebot.types.InlineKeyboardMarkup(row_width=1)
-      but1 = telebot.types.InlineKeyboardButton("Give BD", callback_data="BD_cout")
-      markup.add(but1)      
-      bot.send_message(message.chat.id, text=f"{all_users_cout()}".format(message.from_user), reply_markup = markup)
-      start(message)
-  else:
-    bot.send_message(message.chat.id, text="Неизвестная команда. Посмотри лучше расписание".format(message.from_user))
+    markup = telebot.types.InlineKeyboardMarkup(row_width=1)
+    but1 = telebot.types.InlineKeyboardButton("Give BD", callback_data="BD_cout")
+    markup.add(but1)      
+    bot.send_message(message.chat.id, text=f"{all_users_cout()}".format(message.from_user), reply_markup = markup)
+    start(message)
+  elif message.text == "🗞️":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    butn1 = types.KeyboardButton("1 курс")
-    butn2 = types.KeyboardButton("2 курс")
-    butn3 = types.KeyboardButton("3 курс")
-    butn4 = types.KeyboardButton("4 курс")
-    markup.add(butn1, butn2, butn3, butn4,)
-    bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
-    bot.register_next_step_handler(message, groups)
+    butn1 = types.KeyboardButton("Отмена")
+    markup.add(butn1)
+    bot.send_message(message.chat.id, text="Публикуем новость. Отправь текст, который нужно разослать всем пользователям".format(message.from_user), reply_markup=markup)
+    bot.register_next_step_handler(message, news_for_all_users)
+
+def news_for_all_users(message):
+  if message.text == "Отмена":
+    bot.send_message(message.chat.id, text="Нет так нет".format(message.from_user))
+    start(message)
+  else:
+    list = all_id()
+    for i in list:
+      bot.send_message(i, text=f"Новость:\n{message.text}".format(message.from_user))
+    start(message)
+
 
 def groups(message):
   if message.text == "1 курс":

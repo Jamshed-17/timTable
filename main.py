@@ -157,3 +157,12 @@ def base_open_admin():
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
     return data
+
+def all_id():
+    #Эта функция возвращает все  id пользователей бота, в виде списка
+    with open("Data/DataBaseStudent.json", "r") as read_file:
+        data = dict(json.load(read_file))
+        a = []
+        for i in data.keys():
+            a.append(i)
+        return(a)
