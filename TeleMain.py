@@ -1,11 +1,12 @@
 import telebot
+import time
 from telebot import types
 import datetime
-from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_cout, base_open_admin
+from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_cout, base_open_admin, time_check
+from config import work_TOKEN, test_TOKEN
 
-bot = telebot.TeleBot("7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo")
-                     # 7136769737:AAEZhLglJIQtGr88HEjqUW8sfx2lYglVHAo -- Тестовый, 
-                     # 7931500372:AAF28kr9FZgftLFkBKHXmW7J3VqnGYKseEQ -- рабочий
+bot = telebot.TeleBot(test_TOKEN)
+
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -101,7 +102,7 @@ def groups(message):
 def getIdGroup(message):
   global GroupId
   GroupId = Group_ID(message.text)
-  groupChoise(message.text, str(message.chat.id), str(message.chat.username))
+  groupChoise(message.text, str(message.chat.id), str(message.chat.username), datetime.datetime.now().strftime('(%Y-%m-%d)%H:%M:%S'))
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
   btn1 = types.KeyboardButton("Понедельник")
   btn2 = types.KeyboardButton("Вторник")
@@ -116,14 +117,22 @@ def getIdGroup(message):
 
 @bot.message_handler(content_types=['text'])
 def func(message):
-  week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Вся неделя"]
-  try:
-    if message.text in week_days:
-        bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), str(message.text)), parse_mode="Markdown")
-    elif (message.text == "Сменить группу"):
-      start(message)
-  except:
-    bot.send_message(message.chat.id, text="Либо твой косяк, либо мой. Давай начнём с начала, нажми на /start")
+    time.sleep(0.5)
+    week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Вся неделя"]
+    try:
+      if message.text in week_days:
+        now = datetime.datetime.now().strftime('(%Y-%m-%d)%H:%M:%S')
+        if time_check(now, str(message.chat.id)) == True:
+          bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), str(message.text)), parse_mode="Markdown")
+        else:
+          bot.send_message(message.chat.id, text="Слишком много запросов за эту секунду. Давай чуть помедленнее")
+          start(message)
+      elif (message.text == "Сменить группу"):
+        start(message)
+    except:
+      bot.send_message(message.chat.id, text="Либо твой косяк, либо мой. Давай начнём с начала, нажми на /start")
+  
+
 
 @bot.callback_query_handler(func=lambda call: call.data == "BD_cout")
 def BD_cout_func(call: types.CallbackQuery):

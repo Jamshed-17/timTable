@@ -11,18 +11,6 @@ def Group_ID(group_name):
             if group_name == Group_data[i]["groups"][n]["name"]:
                 return Group_data[i]["groups"][n]["id"]
 
-def GroupChekName(group_name):
-    #Проверяет наличие такой группы в API
-    Group_list = requests.get("https://urtk-journal.ru/api/groups/urtk")
-    Group_data = Group_list.json()
-    for i in range(0, len(Group_data)):
-        for n in range(0, len(Group_data[i]["groups"])):
-            if group_name == Group_data[i]["groups"][n]["name"]:
-                return True
-            else:
-                pass
-    return False
-
 def Is_t_group(ID, text):
     """
     Преобразовывает данные из API в строку для вывода расисания
@@ -129,11 +117,11 @@ def all_users_cout():
     return cout
         
 
-def groupChoise(G_name: str, ID: str, username:str):
+def groupChoise(G_name: str, ID: str, username:str, time):
     #Добавляет запись в базу данных
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
-        studentGroupChoise = {"groupName":G_name, "username":username}
+        studentGroupChoise = {"groupName":G_name, "username":username, "time":time}
         if ID in data.keys():
             if G_name != data[ID]["groupName"]:
                 data[ID] = studentGroupChoise
@@ -143,6 +131,20 @@ def groupChoise(G_name: str, ID: str, username:str):
             data[ID] = studentGroupChoise
         with open('Data/DataBaseStudent.json', "w", encoding='utf-8') as write_file:
             json.dump(data, write_file, ensure_ascii=False)
+            
+def time_check(time_of_user, ID):
+    #Сравнивает время отправки сообщений пользователем
+    with open("Data/DataBaseStudent.json", "r") as read_file:
+        data = dict(json.load(read_file))
+        if ID in data.keys():
+            last_time = datetime.datetime.strptime(data[ID]["time"], '(%Y-%m-%d)%H:%M:%S')
+            data[ID]["time"] = time_of_user
+            with open('Data/DataBaseStudent.json', "w", encoding='utf-8') as write_file:
+                json.dump(data, write_file, ensure_ascii=False)
+            if last_time < datetime.datetime.strptime(time_of_user, '(%Y-%m-%d)%H:%M:%S'):
+                return True
+            else:
+                return False
 
 def base_group_name(id):
     #Находит запись пользователя в БД и возвращает последнюю выбранную им группу
