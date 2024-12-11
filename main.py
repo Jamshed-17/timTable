@@ -156,7 +156,11 @@ def base_open_admin():
     #Выводит базу данных, для сохранения (Админ панель)
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
-    return data
+    write_file = open("Data/DB_save.txt", "w")
+    write_file.write(str(data).replace("'", '"'))
+    write_file.close()
+    return "Data/DB_save.txt"
+    
 
 def all_id():
     #Эта функция возвращает все  id пользователей бота, в виде списка

@@ -143,6 +143,6 @@ def func(message):
 
 @bot.callback_query_handler(func=lambda call: call.data == "BD_cout")
 def BD_cout_func(call: types.CallbackQuery):
-    bot.send_message(call.message.chat.id, text=f"{str(base_open_admin()).replace("'", '"')}")
+    bot.send_document(call.message.chat.id, open(f'{base_open_admin()}', 'rb'))
    
 bot.infinity_polling()
