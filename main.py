@@ -104,17 +104,20 @@ def Is_t_group(ID, text):
 
 def all_users_cout():
     #Выводит всех пользователей с выранной гоуппой (Админ панель)
-    cout = "Все пользователи:\n"
+    cout = ["Все пользователи:\n"]
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
         IDs = list(data.keys())
         x = 0
-        for i in IDs:
-            x += 1
-            cout += f"{x}. @{data[i]["username"]} - {data[i]["groupName"]}\n"
-            
-        cout = cout[0:-1]
-    return cout
+        i = 0
+        return_list = []
+        for i in range(len(IDs) // 180):
+            for i in IDs:
+                x += 1
+                cout.append(f"{x}. @{data[i]["username"]} - {data[i]["groupName"]}\n")
+            return_list.append(cout)
+        
+    return return_list
         
 
 def groupChoise(G_name: str, ID: str, username:str, time):

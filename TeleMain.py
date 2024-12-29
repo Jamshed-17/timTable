@@ -47,8 +47,19 @@ def admin_urls(message):
   elif message.text == "👥":
     markup = telebot.types.InlineKeyboardMarkup(row_width=1)
     but1 = telebot.types.InlineKeyboardButton("Give BD", callback_data="BD_cout")
-    markup.add(but1)      
-    bot.send_message(message.chat.id, text=f"{all_users_cout()}".format(message.from_user), reply_markup = markup)
+    markup.add(but1)
+    for i in range (len(all_users_cout())):
+      cout = ""
+      for j in range(len(all_users_cout()[i])):
+        cout += all_users_cout()[i][j]
+        if j % 180 == 0:
+          bot.send_message(message.chat.id, text=f"{cout}".format(message.from_user))
+          cout = ""
+          cout += all_users_cout()[i][j]
+      bot.send_message(message.chat.id, text=f"{cout}".format(message.from_user))
+    else:
+      bot.send_message(message.chat.id, text=f"Чтобы вывести список всех пользователей в формате бд - нажмите".format(message.from_user), reply_markup = markup)
+
     start(message)
   elif message.text == "🗞️":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
