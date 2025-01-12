@@ -10,10 +10,21 @@ def Group_ID(group_name):
         for n in range(0, len(Group_data[i]["groups"])):
             if group_name == Group_data[i]["groups"][n]["name"]:
                 return Group_data[i]["groups"][n]["id"]
+            
+def groups_for_keyboard(course):
+    list_of_groups = []
+    Group_list = requests.get("https://urtk-journal.ru/api/groups/urtk")
+    Group_data = Group_list.json()
+    for i in range(len(Group_data[course]["groups"])):
+        list_of_groups.append(Group_data[course]["groups"][i]["name"])
+    
+    return list_of_groups
+
+            
 
 def Is_t_group(ID, text):
     """
-    Преобразовывает данные из API в строку для вывода расисания
+    Преобразовывает данные из API в строку для вывода расписания
     """
     #Получаем доступ к объекту
     client = requests.get(f"https://urtk-journal.ru/api/schedule/group/{ID}")
@@ -103,7 +114,7 @@ def Is_t_group(ID, text):
         return strokes[ind]
 
 def all_users_cout():
-    #Выводит всех пользователей с выранной гоуппой (Админ панель)
+    #Выводит всех пользователей с выбранной гоуппой (Админ панель)
     cout = ["Все пользователи:\n"]
     with open("Data/DataBaseStudent.json", "r") as read_file:
         data = dict(json.load(read_file))
@@ -111,7 +122,7 @@ def all_users_cout():
         x = 0
         i = 0
         return_list = []
-        for i in range(len(IDs) // 180):
+        for i in range(len(IDs) // 120):
             for i in IDs:
                 x += 1
                 cout.append(f"{x}. @{data[i]["username"]} - {data[i]["groupName"]}\n")
@@ -173,3 +184,34 @@ def all_id():
         for i in data.keys():
             a.append(i)
         return(a)
+    
+    
+def prepod_ch(lastname):
+    #Возвращает все возможные варианты ФИО (в API) по принятой фамилии. Возвращает список с однофамильцами
+    lastname = lastname
+    return_arr = []
+    Group_list = requests.get("https://urtk-journal.ru/api/groups/urtk")
+    Group_data = Group_list.json()
+    for i in range(0, len(Group_data)):
+        for n in range(0, len(Group_data[i]["groups"])):
+            ID = Group_data[i]["groups"][n]["id"]
+            client = requests.get(f"https://urtk-journal.ru/api/schedule/group/{ID}")
+            data = client.json()
+            for x in range(0, len(data["schedule"])):
+                for y in range(0, len(data["schedule"][x]["lessons"])-1):
+                    if "name" in data["schedule"][x]["lessons"][y]:
+                        if lastname in data["schedule"][x]["lessons"][y]["name"]:
+                            name = ""
+                            name += "".join(data["schedule"][x]["lessons"][y]["name"].split(" ")[-3])
+                            name += "".join(" ")
+                            name += "".join(data["schedule"][x]["lessons"][y]["name"].split(" ")[-2:])
+                            return_arr.append(name)
+    return_arr = list(set(return_arr))
+    check_arr = []
+    for i in return_arr:
+        if lastname in i:
+            pass
+        else:
+            check_arr.append(i)
+    
+    return list(set(return_arr) - set(check_arr))

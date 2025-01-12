@@ -3,10 +3,28 @@ import time
 from telebot import types
 import datetime
 from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_cout, base_open_admin, time_check, all_id
+import main
 from config import work_TOKEN, test_TOKEN
 
-bot = telebot.TeleBot(work_TOKEN)
+bot = telebot.TeleBot(test_TOKEN)
 
+@bot.message_handler(commands=['prepod'])
+def prepod_tim_table(message):
+  del_keyboard = types.ReplyKeyboardRemove()
+  bot.send_message(message.chat.id, text="Давайте авторизуемся. Введите фамилию преподавателя", reply_markup = del_keyboard)
+  bot.register_next_step_handler(message, prepod_to_BD)
+  
+def prepod_to_BD(message):
+  name = ''
+  msg = bot.send_message(message.chat.id, text=f"Загрузка. Одну секунду")
+  keyboard = types.ReplyKeyboardMarkup(True, True)
+  list = main.prepod_ch(message.text)
+  bot.delete_message(message.chat.id, msg.message_id)
+  for i in list:
+    keyboard.add(i)
+    name += i
+  bot.send_message(message.chat.id, text="Выберите своё ФИО из этого списка:\nЕсли список пуст - фамилия введена неправильно или такой фамилии в текущем расписании нет (Фамилия начинается с заглавной буквы)", reply_markup=keyboard, parse_mode="Markdown")
+  
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -22,6 +40,7 @@ def start(message):
     markup.add(butn1, butn2, butn3, butn4,)
     bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
     bot.register_next_step_handler(message, groups)
+
 
 def admin_menu(message):
   #Меню для админа, в котором можно посомтреть расписание, пользователей и опубликовать что-то
@@ -52,7 +71,7 @@ def admin_urls(message):
       cout = ""
       for j in range(len(all_users_cout()[i])):
         cout += all_users_cout()[i][j]
-        if j % 180 == 0:
+        if j % 120 == 0:
           bot.send_message(message.chat.id, text=f"{cout}".format(message.from_user))
           cout = ""
           cout += all_users_cout()[i][j]
@@ -82,37 +101,26 @@ def news_for_all_users(message):
 def groups(message):
   if message.text == "1 курс":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    gr1 = types.KeyboardButton("1АС1")
-    gr2 = types.KeyboardButton("1ИС1")
-    gr3 = types.KeyboardButton("1С1")
-    gr4 = types.KeyboardButton("1ТО1")
-    gr5 = types.KeyboardButton("1ТО2")
-    markup.add(gr1, gr2, gr3, gr4, gr5)
+    for index in range(0, len(main.groups_for_keyboard(0)), 3):
+      row_buttons = main.groups_for_keyboard(1)[index:index + 3] 
+      markup.add(*row_buttons)
   elif message.text == "2 курс":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    gr1 = types.KeyboardButton("2АС1")
-    gr2 = types.KeyboardButton("2ИС1")
-    gr3 = types.KeyboardButton("2ИС2")
-    gr4 = types.KeyboardButton("2ОС1")
-    gr5 = types.KeyboardButton("2С1")
-    markup.add(gr1, gr2, gr3, gr4, gr5)
+    for index in range(0, len(main.groups_for_keyboard(1)), 3):
+      row_buttons = main.groups_for_keyboard(1)[index:index + 3] 
+      markup.add(*row_buttons)
   elif message.text == "3 курс":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    gr1 = types.KeyboardButton("3АС1")
-    gr2 = types.KeyboardButton("3ИС1")
-    gr3 = types.KeyboardButton("3ИС2")
-    gr4 = types.KeyboardButton("3ОС1")
-    gr5 = types.KeyboardButton("3С1")
-    gr6 = types.KeyboardButton("3Э1")
-    markup.add(gr1, gr2, gr3, gr4, gr5, gr6)
+    for index in range(0, len(main.groups_for_keyboard(2)), 3):
+      row_buttons = main.groups_for_keyboard(1)[index:index + 3] 
+      markup.add(*row_buttons)
   elif message.text == "4 курс":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    gr1 = types.KeyboardButton("4АС1")
-    gr2 = types.KeyboardButton("4ИС1")
-    gr3 = types.KeyboardButton("4ИС2")
-    gr4 = types.KeyboardButton("4ОС1")
-    gr5 = types.KeyboardButton("4С1")
-    markup.add(gr1, gr2, gr3, gr4, gr5)
+    for index in range(0, len(main.groups_for_keyboard(3)), 3):
+      row_buttons = main.groups_for_keyboard(1)[index:index + 3] 
+      markup.add(*row_buttons)
+  elif message.text == "/prepod":
+    prepod_tim_table(message)
 
   bot.send_message(message.chat.id, text="Выбери группу".format(message.from_user),reply_markup=markup)
   bot.register_next_step_handler(message, getIdGroup);
