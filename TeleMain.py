@@ -16,10 +16,9 @@ def prepod_tim_table(message):
   
 def prepod_to_BD(message):
   name = ''
-  msg = bot.send_message(message.chat.id, text=f"Загрузка. Одну секунду")
+  bot.send_message(message.chat.id, text=f"Загрузка. Одну секунду")
   keyboard = types.ReplyKeyboardMarkup(True, True)
   list = main.prepod_ch(message.text)
-  bot.delete_message(message.chat.id, msg.message_id)
   for i in list:
     keyboard.add(i)
     name += i
