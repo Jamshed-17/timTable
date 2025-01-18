@@ -6,7 +6,7 @@ from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_c
 import main
 from config import work_TOKEN, test_TOKEN
 
-bot = telebot.TeleBot(test_TOKEN)
+bot = telebot.TeleBot(work_TOKEN)
 
 @bot.message_handler(commands=['prepod'])
 def prepod_tim_table(message):
@@ -42,7 +42,7 @@ def start(message):
 
 
 def admin_menu(message):
-  #Меню для админа, в котором можно посомтреть расписание, пользователей и опубликовать что-то
+  # Меню для админа, в котором можно посомтреть расписание, пользователей и опубликовать что-то
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
   gr1 = types.KeyboardButton("🗓️")
   gr2 = types.KeyboardButton("👥")
@@ -52,7 +52,7 @@ def admin_menu(message):
   bot.register_next_step_handler(message, admin_urls)
   
 def admin_urls(message):
-  #Здесь маршрутизация для админ меню
+  # Здесь маршрутизация для админ меню
   if message.text == "🗓️":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     butn1 = types.KeyboardButton("1 курс")
@@ -98,6 +98,7 @@ def news_for_all_users(message):
 
 
 def groups(message):
+  # Здесь генерируются кнопки для выбора группы. 
   if message.text == "1 курс":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     for index in range(0, len(main.groups_for_keyboard(0)), 3):
@@ -125,6 +126,7 @@ def groups(message):
   bot.register_next_step_handler(message, getIdGroup);
 
 def getIdGroup(message):
+  # Здесь можно выбрать день недели
   global GroupId
   GroupId = Group_ID(message.text)
   groupChoise(message.text, str(message.chat.id), str(message.chat.username), datetime.datetime.now().strftime('(%Y-%m-%d)%H:%M:%S'))
@@ -142,6 +144,7 @@ def getIdGroup(message):
 
 @bot.message_handler(content_types=['text'])
 def func(message):
+  # А это вывод расписания
     time.sleep(0.5)
     week_days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Вся неделя"]
     try:
@@ -166,6 +169,7 @@ def func(message):
 
 @bot.callback_query_handler(func=lambda call: call.data == "BD_cout")
 def BD_cout_func(call: types.CallbackQuery):
+  #Ответ для кнопки, чтобы вывести расписание 
     bot.send_document(call.message.chat.id, open(f'{base_open_admin()}', 'rb'))
    
 bot.infinity_polling()
