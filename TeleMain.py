@@ -151,12 +151,7 @@ def func(message):
       if message.text in week_days:
         now = datetime.datetime.now().strftime('(%Y-%m-%d)%H:%M:%S')
         if time_check(now, str(message.chat.id)) == True:
-          if message.text == "Пятница":
-            bot.send_message(message.chat.id, text=f"{Is_t_group(base_group_name(str(message.chat.id)), str(message.text))}*17:00*) Дискотека - а/з\nТанцы, конкурсы, подарки.", parse_mode="Markdown")
-          elif message.text == "Вся неделя":
-            bot.send_message(message.chat.id, text=f"{Is_t_group(base_group_name(str(message.chat.id)), str(message.text))}*\nА ащё в актовом зале в \nпятницу (24.01) в 17:00 \nбудет дискотека.*", parse_mode="Markdown")
-          else:
-            bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), str(message.text)), parse_mode="Markdown")
+          bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), str(message.text)), parse_mode="Markdown")
         else:
           bot.send_message(message.chat.id, text="Слишком много запросов за эту секунду. Давай чуть помедленнее")
           start(message)
