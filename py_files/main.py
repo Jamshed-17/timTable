@@ -116,7 +116,7 @@ def Is_t_group(ID, text):
 def all_users_cout():
     #Выводит всех пользователей с выбранной гоуппой (Админ панель)
     cout = ["Все пользователи:\n"]
-    with open("Data/DataBaseStudent.json", "r") as read_file:
+    with open("Data/DBS.json", "r") as read_file:
         data = dict(json.load(read_file))
         IDs = list(data.keys())
         x = 0
@@ -133,9 +133,9 @@ def all_users_cout():
 
 def groupChoise(G_name: str, ID: str, username:str, time):
     #Добавляет запись в базу данных
-    with open("Data/DataBaseStudent.json", "r") as read_file:
+    with open("Data/DBS.json", "r") as read_file:
         data = dict(json.load(read_file))
-        studentGroupChoise = {"groupName":G_name, "username":username, "time":time}
+        studentGroupChoise = {"groupName":G_name, "username":username, "time":time, "prepod": False}
         if ID in data.keys():
             if G_name != data[ID]["groupName"]:
                 data[ID] = studentGroupChoise
@@ -143,17 +143,17 @@ def groupChoise(G_name: str, ID: str, username:str, time):
                 pass
         else:
             data[ID] = studentGroupChoise
-        with open('Data/DataBaseStudent.json', "w", encoding='utf-8') as write_file:
+        with open('Data/DBS.json', "w", encoding='utf-8') as write_file:
             json.dump(data, write_file, ensure_ascii=False)
             
 def time_check(time_of_user, ID):
     #Сравнивает время отправки сообщений пользователем
-    with open("Data/DataBaseStudent.json", "r") as read_file:
+    with open("Data/DBS.json", "r") as read_file:
         data = dict(json.load(read_file))
         if ID in data.keys():
             last_time = datetime.datetime.strptime(data[ID]["time"], '(%Y-%m-%d)%H:%M:%S')
             data[ID]["time"] = time_of_user
-            with open('Data/DataBaseStudent.json', "w", encoding='utf-8') as write_file:
+            with open('Data/DBS.json', "w", encoding='utf-8') as write_file:
                 json.dump(data, write_file, ensure_ascii=False)
             if last_time < datetime.datetime.strptime(time_of_user, '(%Y-%m-%d)%H:%M:%S'):
                 return True
@@ -162,13 +162,13 @@ def time_check(time_of_user, ID):
 
 def base_group_name(id):
     #Находит запись пользователя в БД и возвращает последнюю выбранную им группу
-    with open("Data/DataBaseStudent.json", "r") as read_file:
+    with open("Data/DBS.json", "r") as read_file:
         data = dict(json.load(read_file))
         return Group_ID(data[id]["groupName"])
     
 def base_open_admin():
     #Выводит базу данных, для сохранения (Админ панель)
-    with open("Data/DataBaseStudent.json", "r") as read_file:
+    with open("Data/DBS.json", "r") as read_file:
         data = dict(json.load(read_file))
     write_file = open("Data/DB_save.txt", "w")
     write_file.write(str(data).replace("'", '"'))
@@ -178,7 +178,7 @@ def base_open_admin():
 
 def all_id():
     #Эта функция возвращает все  id пользователей бота, в виде списка
-    with open("Data/DataBaseStudent.json", "r") as read_file:
+    with open("Data/DBS.json", "r") as read_file:
         data = dict(json.load(read_file))
         a = []
         for i in data.keys():
@@ -188,7 +188,7 @@ def all_id():
     
 def prepod_ch(lastname):
     #Возвращает все возможные варианты ФИО (в API) по принятой фамилии. Возвращает список с однофамильцами
-    lastname = lastname
+    lastname = lastname.lower()
     return_arr = []
     Group_list = requests.get("https://urtk-journal.ru/api/groups/urtk")
     Group_data = Group_list.json()
@@ -200,18 +200,48 @@ def prepod_ch(lastname):
             for x in range(0, len(data["schedule"])):
                 for y in range(0, len(data["schedule"][x]["lessons"])-1):
                     if "name" in data["schedule"][x]["lessons"][y]:
-                        if lastname in data["schedule"][x]["lessons"][y]["name"]:
+                        check_name = str(data["schedule"][x]["lessons"][y]["name"]).lower()
+                        if lastname in check_name:
                             name = ""
                             name += "".join(data["schedule"][x]["lessons"][y]["name"].split(" ")[-3])
                             name += "".join(" ")
                             name += "".join(data["schedule"][x]["lessons"][y]["name"].split(" ")[-2:])
                             return_arr.append(name)
+                            
+    
     return_arr = list(set(return_arr))
     check_arr = []
     for i in return_arr:
-        if lastname in i:
+        if lastname in i.lower():
             pass
         else:
             check_arr.append(i)
     
+    prepod = list(set(return_arr) - set(check_arr))
     return list(set(return_arr) - set(check_arr))
+
+
+def prepod_to_bd(prepod_name: str, user_id: str):
+    with open("Data/DBS.json", "r") as file:
+        data = dict(json.load(file))
+        if data[user_id]["prepod"] == False:
+            data[user_id]["prepod"] = prepod_name
+        with open('Data/DBS.json', "w", encoding='utf-8') as write_file:
+            json.dump(data, write_file, ensure_ascii=False)
+            
+
+def prepod_shredule(prepod_name):
+    pass
+
+
+
+
+'''Этот скрипт был для того, чтобы добавить в базу данных новый ключ
+with open("Data/DBS.json", "r") as file:
+    data = dict(json.load(file))
+    for ID in data.keys():
+        studentGroupChoise = {"groupName":data[ID]["groupName"], "username":data[ID]["username"], "time":data[ID]["time"], "prepod": False}
+        data[ID] = studentGroupChoise
+        with open('Data/DBS.json', "w", encoding='utf-8') as write_file:
+            json.dump(data, write_file, ensure_ascii=False)
+    print("Ok")'''

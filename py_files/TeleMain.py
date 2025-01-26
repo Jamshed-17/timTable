@@ -2,19 +2,19 @@ import telebot
 import time
 from telebot import types
 import datetime
-from main import Is_t_group, Group_ID, groupChoise, base_group_name, all_users_cout, base_open_admin, time_check, all_id
-import main
+from main import *
+import main as main
 from config import work_TOKEN, test_TOKEN
 
-bot = telebot.TeleBot(work_TOKEN)
+bot = telebot.TeleBot(test_TOKEN)
 
 @bot.message_handler(commands=['prepod'])
 def prepod_tim_table(message):
   del_keyboard = types.ReplyKeyboardRemove()
   bot.send_message(message.chat.id, text="Давайте авторизуемся. Введите фамилию преподавателя", reply_markup = del_keyboard)
-  bot.register_next_step_handler(message, prepod_to_BD)
+  bot.register_next_step_handler(message, prepod_use)
   
-def prepod_to_BD(message):
+def prepod_use(message):
   name = ''
   bot.send_message(message.chat.id, text=f"Загрузка. Одну секунду")
   keyboard = types.ReplyKeyboardMarkup(True, True)
@@ -22,7 +22,13 @@ def prepod_to_BD(message):
   for i in list:
     keyboard.add(i)
     name += i
-  bot.send_message(message.chat.id, text="Выберите своё ФИО из этого списка:\nЕсли список пуст - фамилия введена неправильно или такой фамилии в текущем расписании нет (Фамилия начинается с заглавной буквы)", reply_markup=keyboard, parse_mode="Markdown")
+  bot.send_message(message.chat.id, text="Выберите своё ФИО из этого списка:\nЕсли список пуст - фамилия введена неправильно или такой фамилии в текущем расписании нет", reply_markup=keyboard, parse_mode="Markdown")
+  bot.register_next_step_handler(message, prepod_to_DB)
+  
+def prepod_to_DB(message):
+  prepod_to_bd(str(message.text), str(message.chat.id))
+  bot.send_message(message.chat.id, text="()JSJSJSJS", parse_mode="Markdown")
+
   
 
 @bot.message_handler(commands=['start'])
@@ -31,6 +37,7 @@ def start(message):
     bot.send_message(message.chat.id, text="Админка есть".format(message.from_user))
     admin_menu(message)
   else:
+    groupChoise(None, str(message.chat.id), str(message.chat.username), None)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     butn1 = types.KeyboardButton("1 курс")
     butn2 = types.KeyboardButton("2 курс")

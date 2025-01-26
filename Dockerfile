@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Запускаем приложение
-CMD ["python", "TeleMain.py"]
+CMD ["python", "py_files/TeleMain.py"]
