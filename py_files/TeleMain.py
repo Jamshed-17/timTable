@@ -6,7 +6,7 @@ from main import *
 import main as main
 from config import work_TOKEN, test_TOKEN
 
-bot = telebot.TeleBot(test_TOKEN)
+bot = telebot.TeleBot(work_TOKEN)
 
 @bot.message_handler(commands=['hey'])
 def valentin_day(message):

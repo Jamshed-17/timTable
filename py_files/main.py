@@ -248,5 +248,6 @@ with open("Data/DBS.json", "r") as file:
         data[ID] = studentGroupChoise
         with open('Data/DBS.json', "w", encoding='utf-8') as write_file:
             json.dump(data, write_file, ensure_ascii=False)
-    print("Ok")'''
+    print("Ok")
     
+'''
