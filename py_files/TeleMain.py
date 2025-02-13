@@ -8,6 +8,49 @@ from config import work_TOKEN, test_TOKEN
 
 bot = telebot.TeleBot(test_TOKEN)
 
+@bot.message_handler(commands=['hey'])
+def valentin_day(message):
+  text = """Привет, Кать.
+Знаешь, иногда программирование приносит очень необычные плюсы.
+Например, возможность создать вот такую оригинальную валентинку.
+Не уверен, что ты когда-либо получала нечто подобное.
+Но если так — пусть эта станет самой запоминающейся.
+
+Просто хочу сказать тебе, что ты — удивительная.
+Ты не просто милая — ты очаровательная.
+Не просто красивая — а по-настоящему особенная.
+Но самое главное — ты человек с невероятным умом и остроумием.
+И это восхищает.
+
+В День святого Валентина я хочу пожелать тебе самого настоящего счастья.
+Не того, которое идеально выглядит на фотографиях.
+А того, которое теплое, искреннее, настоящее.
+Счастья в уютных вечерах, в неожиданных приятных мелочах, в улыбках родных людей.
+Чтобы каждый день у тебя был повод улыбнуться.
+
+Ты заслуживаешь всего самого лучшего.
+И я верю, что у тебя всё получится.
+Будь собой — и мир сам раскроется перед тобой.
+
+Эта валентинка строго анонимная.
+Ты никогда не догадаешься, кто её отправил. наверное.
+
+Если захочешь перечитать всё заново — просто нажми /hey ещё раз.
+А пока — просто наслаждайся моментом и прекрасной музыкой.
+
+С Днём всех влюблённых, Боевой гном)""".split(".")
+
+  for ches in text:
+    bot.send_message(message.chat.id, text=ches)
+    time.sleep(2)
+  audio = open("Data/audio.mp3", "rb")
+  bot.send_audio(message.chat.id, audio=audio)
+  audio.close
+  time.sleep(20)
+  bot.send_message(message.chat.id, text="И кстати...\nБУ\n```pyton\nprint('kampfzwerg')\n```", parse_mode="Markdown")
+  start(message)
+  
+
 @bot.message_handler(commands=['prepod'])
 def prepod_tim_table(message):
   del_keyboard = types.ReplyKeyboardRemove()
@@ -22,7 +65,8 @@ def prepod_use(message):
   for i in list:
     keyboard.add(i)
     name += i
-  bot.send_message(message.chat.id, text="Выберите своё ФИО из этого списка:\nЕсли список пуст - фамилия введена неправильно или такой фамилии в текущем расписании нет", reply_markup=keyboard, parse_mode="Markdown")
+  bot.send_message(message.chat.id, text="""Выберите своё ФИО из этого списка:\nЕсли список пуст - 
+                   фамилия введена неправильно или такой фамилии в текущем расписании нет""", reply_markup=keyboard, parse_mode="Markdown")
   bot.register_next_step_handler(message, prepod_to_DB)
   
 def prepod_to_DB(message):
@@ -83,14 +127,16 @@ def admin_urls(message):
           cout += all_users_cout()[i][j]
       bot.send_message(message.chat.id, text=f"{cout}".format(message.from_user))
     else:
-      bot.send_message(message.chat.id, text=f"Чтобы вывести список всех пользователей в формате бд - нажмите".format(message.from_user), reply_markup = markup)
+      bot.send_message(message.chat.id, text=f"Чтобы вывести список всех пользователей в формате бд - нажмите"
+                       .format(message.from_user), reply_markup = markup)
 
     start(message)
   elif message.text == "🗞️":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     butn1 = types.KeyboardButton("Отмена")
     markup.add(butn1)
-    bot.send_message(message.chat.id, text="Публикуем новость. Отправь текст, который нужно разослать всем пользователям".format(message.from_user), reply_markup=markup)
+    bot.send_message(message.chat.id, text="Публикуем новость. Отправь текст, который нужно разослать всем пользователям"
+                     .format(message.from_user), reply_markup=markup)
     bot.register_next_step_handler(message, news_for_all_users)
 
 def news_for_all_users(message):
@@ -128,6 +174,9 @@ def groups(message):
       markup.add(*row_buttons)
   elif message.text == "/prepod":
     prepod_tim_table(message)
+  elif message.text == "/hey":
+    valentin_day(message)
+    
 
   bot.send_message(message.chat.id, text="Выбери группу".format(message.from_user),reply_markup=markup)
   bot.register_next_step_handler(message, getIdGroup);
@@ -136,7 +185,8 @@ def getIdGroup(message):
   # Здесь можно выбрать день недели
   global GroupId
   GroupId = Group_ID(message.text)
-  groupChoise(message.text, str(message.chat.id), str(message.chat.username), datetime.datetime.now().strftime('(%Y-%m-%d)%H:%M:%S'))
+  groupChoise(message.text, str(message.chat.id), str(message.chat.username),
+              datetime.datetime.now().strftime('(%Y-%m-%d)%H:%M:%S'))
   markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
   btn1 = types.KeyboardButton("Понедельник")
   btn2 = types.KeyboardButton("Вторник")
@@ -147,7 +197,8 @@ def getIdGroup(message):
   btn7 = types.KeyboardButton("Вся неделя")
   btn8 = types.KeyboardButton("Сменить группу")
   markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
-  bot.send_message(message.chat.id, text="На какой день недели тебе выдать расписание?".format(message.from_user), reply_markup=markup)
+  bot.send_message(message.chat.id, text="На какой день недели тебе выдать расписание?"
+                   .format(message.from_user), reply_markup=markup)
 
 @bot.message_handler(content_types=['text'])
 def func(message):
@@ -158,7 +209,8 @@ def func(message):
       if message.text in week_days:
         now = datetime.datetime.now().strftime('(%Y-%m-%d)%H:%M:%S')
         if time_check(now, str(message.chat.id)) == True:
-          bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)), str(message.text)), parse_mode="Markdown")
+          bot.send_message(message.chat.id, text=Is_t_group(base_group_name(str(message.chat.id)),
+                                                            str(message.text)), parse_mode="Markdown")
         else:
           bot.send_message(message.chat.id, text="Слишком много запросов за эту секунду. Давай чуть помедленнее")
           start(message)
@@ -167,8 +219,7 @@ def func(message):
     except:
       bot.send_message(message.chat.id, text="Либо твой косяк, либо мой. Давай начнём с начала, нажми на /start")
   
-
-
+  
 @bot.callback_query_handler(func=lambda call: call.data == "BD_cout")
 def BD_cout_func(call: types.CallbackQuery):
   #Ответ для кнопки, чтобы вывести расписание 

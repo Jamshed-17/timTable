@@ -17,10 +17,8 @@ def groups_for_keyboard(course):
     Group_data = Group_list.json()
     for i in range(len(Group_data[course]["groups"])):
         list_of_groups.append(Group_data[course]["groups"][i]["name"])
-    
+        
     return list_of_groups
-
-            
 
 def Is_t_group(ID, text):
     """
@@ -52,12 +50,14 @@ def Is_t_group(ID, text):
             num = num + 1
 
             if x == 0:
-                les.append(["*", data["schedule"][i]["date"][0:5], " - ", data["schedule"][i]["day"], "* ", "(", data["name"], ")"])
+                les.append(["*", data["schedule"][i]["date"][0:5], " - ", data["schedule"][i]["day"],
+                            "* ", "(", data["name"], ")"])
                 x = 1
             try:
                 if "Кл. час" in data["schedule"][i]["lessons"][n]["name"]:
                     if "name" in data["schedule"][i]["lessons"][n] and "office" in data["schedule"][i]["lessons"][n]:
-                        les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"], " - ", data["schedule"][i]["lessons"][n]["office"]])
+                        les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"], 
+                                    " - ", data["schedule"][i]["lessons"][n]["office"]])
            
                 else:
                     nameInTwo = data["schedule"][i]["lessons"][n]["name"]
@@ -72,7 +72,8 @@ def Is_t_group(ID, text):
                     officeList = officeList.split("/")
                     officeOne = officeList[0]
                     officeTwo = officeList[1]
-                    les.append(["  "*9, "*", num, "* \n",nameOneList, "гр" , " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo, "\n"])
+                    les.append(["  "*9, "*", num, "* \n",nameOneList, "гр" ,
+                                " - ", officeOne, nameTwoList,"гр" , " - ", officeTwo, "\n"])
             except:
                 try:
                     if "name" in data["schedule"][i]["lessons"][n]:
@@ -81,9 +82,12 @@ def Is_t_group(ID, text):
                                 pass
                         if x == 1 :
                             if data["schedule"][i]["lessons"][n]["name"].split(" ")[1] == "1" or data["schedule"][i]["lessons"][n]["name"].split(" ")[1] == "2":
-                                les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0]," ", data["schedule"][i]["lessons"][n]["name"].split(" ")[1], "гр" , " - ", data["schedule"][i]["lessons"][n]["office"]])
+                                les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0],
+                                            " ", data["schedule"][i]["lessons"][n]["name"].split(" ")[1], "гр" , " - ",
+                                            data["schedule"][i]["lessons"][n]["office"]])
                             else:
-                                les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " - ", data["schedule"][i]["lessons"][n]["office"]])
+                                les.append(["*", num, "*) ", data["schedule"][i]["lessons"][n]["name"].split(" ")[0], " - ",
+                                            data["schedule"][i]["lessons"][n]["office"]])
                     else:
                         les.append(str(num))
                 except:
@@ -245,3 +249,4 @@ with open("Data/DBS.json", "r") as file:
         with open('Data/DBS.json', "w", encoding='utf-8') as write_file:
             json.dump(data, write_file, ensure_ascii=False)
     print("Ok")'''
+    
