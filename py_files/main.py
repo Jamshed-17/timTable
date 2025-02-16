@@ -232,13 +232,7 @@ def prepod_to_bd(prepod_name: str, user_id: str):
             data[user_id]["prepod"] = prepod_name
         with open('Data/DBS.json', "w", encoding='utf-8') as write_file:
             json.dump(data, write_file, ensure_ascii=False)
-            
-
-def prepod_shredule(prepod_name):
-    pass
-
-
-
+        
 
 '''Этот скрипт был для того, чтобы добавить в базу данных новый ключ
 with open("Data/DBS.json", "r") as file:
