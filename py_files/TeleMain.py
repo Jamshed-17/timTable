@@ -8,49 +8,6 @@ from config import work_TOKEN, test_TOKEN
 
 bot = telebot.TeleBot(test_TOKEN)
 
-@bot.message_handler(commands=['hey'])
-def valentin_day(message):
-  text = """Привет, Кать.
-Знаешь, иногда программирование приносит очень необычные бонусы.
-Например, возможность создать вот такую валентинку.
-Так получилось, что я знаю, что тебе подарили несколько валентинок.
-Но надеюсь эта станет самой запоминающейся.
-
-Просто хочу сказать тебе, что ты — удивительная.
-Ты не просто милая — ты очаровательная.
-Не просто красивая — а по-настоящему особенная.
-Но самое главное — ты человек с невероятным умом и остроумием.
-И это очень восхищает.
-
-В День святого Валентина я хочу пожелать тебе самого настоящего счастья.
-Не того, которое идеально выглядит на фотографиях.
-А того, которое теплое, искреннее, настоящее.
-Счастья в уютных вечерах, в неожиданных приятных мелочах, в улыбках родных людей.
-Чтобы каждый день у тебя был повод улыбнуться.
-
-Ты заслуживаешь всего самого лучшего.
-И я верю, что у тебя всё получится.
-Будь собой — и мир сам раскроет перед тобой все двери.
-
-Эта валентинка строго анонимная.
-Ты никогда не догадаешься, кто её отправил. наверное.
-
-Если захочешь перечитать всё заново — просто нажми /hey ещё раз.
-А пока — просто наслаждайся моментом и прекрасной музыкой.
-
-С Днём всех влюблённых, Боевой гном)""".split(".")
-
-  for ches in text:
-    bot.send_message(message.chat.id, text=ches)
-    time.sleep(2)
-  audio = open("Data/audio.mp3", "rb")
-  bot.send_audio(message.chat.id, audio=audio)
-  audio.close
-  time.sleep(20)
-  bot.send_message(message.chat.id, text="И кстати...\nБУ\n```pyton\nprint('kampfzwerg')\n```", parse_mode="Markdown")
-  start(message)
-  
-
 @bot.message_handler(commands=['prepod'])
 def prepod_tim_table(message):
   del_keyboard = types.ReplyKeyboardRemove()
@@ -65,8 +22,9 @@ def prepod_use(message):
   for i in list:
     keyboard.add(i)
     name += i
-  bot.send_message(message.chat.id, text="""Выберите своё ФИО из этого списка:\nЕсли список пуст - 
-                   фамилия введена неправильно или такой фамилии в текущем расписании нет""", reply_markup=keyboard, parse_mode="Markdown")
+  bot.send_message(message.chat.id, 
+                   text="""Выберите своё ФИО из этого списка:\nЕсли список пуст - фамилия введена неправильно или такой фамилии в текущем расписании нет""", 
+                   reply_markup=keyboard, parse_mode="Markdown")
   bot.register_next_step_handler(message, prepod_to_DB)
   
 def prepod_to_DB(message):
@@ -174,8 +132,6 @@ def groups(message):
       markup.add(*row_buttons)
   elif message.text == "/prepod":
     prepod_tim_table(message)
-  elif message.text == "/hey":
-    valentin_day(message)
     
 
   bot.send_message(message.chat.id, text="Выбери группу".format(message.from_user),reply_markup=markup)

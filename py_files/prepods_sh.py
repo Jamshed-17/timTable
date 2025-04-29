@@ -53,17 +53,13 @@ def extract_schedule():
     return all_teachers_schedule
 
 def update_teacher_sh():
+    """Функция для обновления словаря расписания"""
     # Извлечение расписания
     schedule = extract_schedule()
 
     # Сохранение расписания всех преподавателей в файл
     with open("Data/teachers_schedule.json", "w", encoding="utf-8") as f:
         json.dump(schedule, f, ensure_ascii=False, indent=4)
-
-
-
-
-import json
 
 # Функция для форматирования расписания преподавателя
 def format_teacher_schedule(teacher_name, schedule_file = "Data/teachers_schedule.json"):
@@ -83,6 +79,7 @@ def format_teacher_schedule(teacher_name, schedule_file = "Data/teachers_schedul
     for lesson in lessons:
         date = lesson["date"]
         day = lesson["day"]
+        num = lesson["number"]
 
         # Проверяем, относится ли урок к указанному преподавателю
         if teacher_name not in lesson["name"]:
@@ -98,6 +95,7 @@ def format_teacher_schedule(teacher_name, schedule_file = "Data/teachers_schedul
         for subject, office in zip(subject_parts, office_parts):
             if teacher_name in subject:
                 grouped_schedule[date]["lessons"].append({
+                    "number": num,
                     "name": subject.strip(),
                     "group": lesson["group"],
                     "office": office.strip(),
@@ -107,7 +105,8 @@ def format_teacher_schedule(teacher_name, schedule_file = "Data/teachers_schedul
     formatted_schedule = []
     for date, data in grouped_schedule.items():
         formatted_schedule.append(f"{date} - {data['day']} ({teacher_name})")
-        for idx, lesson in enumerate(data["lessons"], start=1):
+        for i, lesson in enumerate(data["lessons"], start=1):
+            idx = lesson["number"]
             subject = lesson["name"]
             group = lesson["group"]
             office = lesson["office"] if lesson["office"].strip() else "кабинет не указан"
@@ -117,5 +116,7 @@ def format_teacher_schedule(teacher_name, schedule_file = "Data/teachers_schedul
     return formatted_schedule
 
 
-for i in format_teacher_schedule("Токманцев Д. А."):
-    print(i)
+#update_teacher_sh()
+
+for i in range(len(format_teacher_schedule("Коломейцев И. И."))):
+    print(i, format_teacher_schedule("Коломейцев И. И.")[i])
