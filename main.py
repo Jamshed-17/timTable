@@ -1,6 +1,7 @@
 import requests
 import json
 import datetime
+from prepods import *
 
 def Group_ID(group_name):
     #Выдаёт id группы, чтобы выдавать из API
@@ -123,8 +124,7 @@ def all_users_cout():
     with open("Data/DBS.json", "r") as read_file:
         data = dict(json.load(read_file))
         IDs = list(data.keys())
-        x = 0
-        i = 0
+        x, i = 0
         return_list = []
         for i in IDs:
             x += 1
@@ -166,7 +166,7 @@ def base_group_name(id):
     with open("Data/DBS.json", "r") as read_file:
         data = dict(json.load(read_file))
         return Group_ID(data[id]["groupName"])
-    
+
 def base_open_admin():
     #Выводит базу данных, для сохранения (Админ панель)
     with open("Data/DBS.json", "r") as read_file:
@@ -175,7 +175,6 @@ def base_open_admin():
     write_file.write(str(data).replace("'", '"'))
     write_file.close()
     return "Data/DB_save.txt"
-    
 
 def all_id():
     #Эта функция возвращает все  id пользователей бота, в виде списка
@@ -185,156 +184,3 @@ def all_id():
         for i in data.keys():
             a.append(i)
         return(a)
-    
-    
-def prepod_ch(lastname):
-    #Возвращает все возможные варианты ФИО (в API) по принятой фамилии. Возвращает список с однофамильцами
-    lastname = lastname.lower()
-    return_arr = []
-    Group_list = requests.get("https://urtk-journal.ru/api/groups/urtk")
-    Group_data = Group_list.json()
-    for i in range(0, len(Group_data)):
-        for n in range(0, len(Group_data[i]["groups"])):
-            ID = Group_data[i]["groups"][n]["id"]
-            client = requests.get(f"https://urtk-journal.ru/api/schedule/group/{ID}")
-            data = client.json()
-            for x in range(0, len(data["schedule"])):
-                for y in range(0, len(data["schedule"][x]["lessons"])-1):
-                    if "name" in data["schedule"][x]["lessons"][y]:
-                        check_name = str(data["schedule"][x]["lessons"][y]["name"]).lower()
-                        if lastname in check_name:
-                            name = ""
-                            name += "".join(data["schedule"][x]["lessons"][y]["name"].split(" ")[-3])
-                            name += "".join(" ")
-                            name += "".join(data["schedule"][x]["lessons"][y]["name"].split(" ")[-2:])
-                            return_arr.append(name)
-                            
-    
-    return_arr = list(set(return_arr))
-    check_arr = []
-    for i in return_arr:
-        if lastname in i.lower():
-            pass
-        else:
-            check_arr.append(i)
-    
-    prepod = list(set(return_arr) - set(check_arr))
-    return list(set(return_arr) - set(check_arr))
-        
-        
-def prepod_to_bd(prepod_name: str, user_id: str):
-    with open("Data/DBS.json", "r") as file:
-        data = dict(json.load(file))
-        if data[user_id]["prepod"] == False or data[user_id]["prepod"] != prepod_name:
-            data[user_id]["prepod"] = prepod_name
-        with open('Data/DBS.json', "w", encoding='utf-8') as write_file:
-            json.dump(data, write_file, ensure_ascii=False)
-            
-def base_prepod_name(id):
-    #Находит запись пользователя в БД и возвращает препода
-    with open("Data/DBS.json", "r") as read_file:
-        data = dict(json.load(read_file))
-        return data[id]["prepod"]
-
-# Функция для форматирования расписания преподавателя
-def format_teacher_schedule(teacher_name, schedule_file = "Data/teachers_schedule.json"):
-    # Читаем расписание из JSON-файла
-    with open(schedule_file, "r", encoding="utf-8") as f:
-        teacher_schedule = json.load(f)
-    
-    # Проверяем, есть ли расписание для указанного преподавателя
-    if teacher_name not in teacher_schedule:
-        return f"Для преподавателя {teacher_name} расписание не найдено."
-
-    # Получаем расписание для указанного преподавателя
-    lessons = teacher_schedule[teacher_name]
-
-    # Группируем уроки по дате
-    grouped_schedule = {}
-    for lesson in lessons:
-        date = lesson["date"]
-        day = lesson["day"]
-        num = lesson["number"]
-
-        # Проверяем, относится ли урок к указанному преподавателю
-        if date not in grouped_schedule:
-            grouped_schedule[date] = {"day": day, "lessons": []}
-
-        # Извлекаем только часть расписания, относящуюся к указанному преподавателю
-        subject_parts = lesson["name"].split("/")
-        office_parts = lesson["office"].split("/")
-
-        for subject, office in zip(subject_parts, office_parts):
-            if teacher_name.split(" ")[0] in subject:
-                grouped_schedule[date]["lessons"].append({
-                    "number": num,
-                    "name": subject.strip(),
-                    "group": lesson["group"],
-                    "office": office.strip(),
-                })
-
-    # Формируем строку с расписанием
-    formatted_schedule = []
-    for date, data in grouped_schedule.items():
-        data_pars = []
-        ret = []
-        ret.append(f"{date} - {data['day']} ({teacher_name})")
-        for lesson in data["lessons"]:
-            idx = lesson["number"]
-            subject = lesson["name"]
-            group = lesson["group"]
-            office = lesson["office"] if lesson["office"].strip() else "кабинет не указан"
-            data_pars.append(f"{idx}) {subject} {group} - {office}")
-        for i in sorted(data_pars[1:]):
-            ret.append(i)
-        
-        formatted_schedule.append(ret)
-        formatted_schedule.append("\n")  # Пустая строка для разделения дней
-
-        
-    return formatted_schedule
-
-
-
-def teach_shredule_cout_day(day: str, name:str):
-    """Эта функция выводит расписание прерода по дню недели. day - день недели, name - имя препода"""
-    #update_teacher_sh()
-    string = ""
-    returnet_str = ""
-    text = format_teacher_schedule(name)
-    # print(text)
-    if "расписание не найдено" in text:
-        return "Нет расписания на этот день"
-    else:    
-        for i in text:
-            string += f"{i}\n"
-
-        for x in string.split("\n\n"):
-            for k in x.split("', '"):
-                if day in x:
-                    # print(k.replace("['", ""))
-                    # Сортировка
-                    ret = ""
-                    for i in sorted(x.split("\n")[1:]):
-                        ret += f"{i}\n"
-                        
-                    for d in (str(x.split("\n")[0]) + "\n" + ret).split(","):
-                        returnet_str += d.replace("'", "").replace("[", "").replace("]", "") + "\n"
-                    
-                    return returnet_str
-   
-print(teach_shredule_cout_day("Пятница", "Камиров С.М."))
-
-'''Этот скрипт был для того, чтобы добавить в базу данных новый ключ
-with open("Data/DBS.json", "r") as file:
-    data = dict(json.load(file))
-    for ID in data.keys():
-        studentGroupChoise = {"groupName":data[ID]["groupName"], "username":data[ID]["username"], "time":data[ID]["time"], "prepod": False}
-        data[ID] = studentGroupChoise
-        with open('Data/DBS.json', "w", encoding='utf-8') as write_file:
-            json.dump(data, write_file, ensure_ascii=False)
-    print("Ok")
-    
-'''
-
-

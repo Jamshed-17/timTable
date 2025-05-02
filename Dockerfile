@@ -2,7 +2,7 @@
 FROM python:3.12.7
 
 # Копируем файл с зависимостями
-COPY requirements.txt requirements.txt
+COPY deploy/requirements.txt requirements.txt
 
 # Обновляем pip перед установкой зависимостей
 RUN pip install --upgrade pip
