@@ -39,11 +39,9 @@ def extract_schedule():
                     # Извлечение ФИО преподавателя
                     fio = " ".join(lesson["name"].split()[-3:])
                     try:
-                        print(fio)
                         to_fio = fio.split(" ")
                         fio = f"{to_fio[0]} {to_fio[1]}{to_fio[2]}"
                         # fio = fio.replace(fio[fio.index(".")+1], "", 2)
-                        print(fio)
                     except: pass
                     
                     # Добавление расписания в словарь для преподавателя
@@ -72,5 +70,4 @@ def update_teacher_sh():
 def multi_update():
     while True:
         update_teacher_sh()
-        print("-------------------------------------------------")
         time.sleep(600)

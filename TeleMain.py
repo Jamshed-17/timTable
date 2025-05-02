@@ -4,17 +4,18 @@ from telebot import types
 import datetime
 from returned import multi_update
 from main import *
-
 from threading import Thread
 from config import work_TOKEN, test_TOKEN
 
-bot = telebot.TeleBot(test_TOKEN)
+bot = telebot.TeleBot(work_TOKEN)
 t=Thread(target=multi_update)
 t.start()
 
 @bot.message_handler(commands=['prepod'])
 def prepod_tim_table(message):
-  last_prepod = base_prepod_name(str(message.chat.id)).split(" ")[0]
+  try:
+    last_prepod = base_prepod_name(str(message.chat.id)).split(" ")[0]
+  except: last_prepod = False
   if last_prepod:
     del_keyboard = types.ReplyKeyboardMarkup(True, True)
     btn1 = last_prepod
@@ -73,8 +74,10 @@ def prepod_day(message):
       bot.register_next_step_handler(message, prepod_day)
     except:
       bot.send_message(message.chat.id, 
-                     text="Что-то пошло не так... Либо расписания на этот день нет, либо всё сломалось.\nВ любом случае нажмите на /start", 
+                     text="Преподаватель в этот день отдыхает, расписания нет. Нажмите на кнопки чтобы продолжить", 
                      parse_mode="Markdown")
+      bot.register_next_step_handler(message, prepod_day)
+
     
 
 @bot.message_handler(commands=['start'])
