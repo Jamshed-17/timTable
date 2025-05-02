@@ -126,14 +126,11 @@ def all_users_cout():
         x = 0
         i = 0
         return_list = []
-        for i in range(len(IDs) // 120):
-            for i in IDs:
-                x += 1
-                cout.append(f"{x}. @{data[i]["username"]} - {data[i]["groupName"]}\n")
-            return_list.append(cout)
-        
+        for i in IDs:
+            x += 1
+            cout.append(f"{x}. @{data[i]["username"]} - {data[i]["groupName"]}\n")
+        return_list.append(cout)
     return return_list
-        
 
 def groupChoise(G_name: str, ID: str, username:str, time):
     #Добавляет запись в базу данных

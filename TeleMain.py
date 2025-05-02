@@ -126,7 +126,7 @@ def admin_urls(message):
       cout = ""
       for j in range(len(all_users_cout()[i])):
         cout += all_users_cout()[i][j]
-        if j % 120 == 0:
+        if j % 100 == 0:
           bot.send_message(message.chat.id, text=f"{cout}".format(message.from_user))
           cout = ""
           cout += all_users_cout()[i][j]
