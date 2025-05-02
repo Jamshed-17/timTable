@@ -185,7 +185,6 @@ def groups(message):
 
 def getIdGroup(message):
   # Здесь можно выбрать день недели
-  global GroupId
   GroupId = Group_ID(message.text)
   groupChoise(message.text, str(message.chat.id), str(message.chat.username),
               datetime.datetime.now().strftime('(%Y-%m-%d)%H:%M:%S'))

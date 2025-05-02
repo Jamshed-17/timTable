@@ -1,5 +1,5 @@
 # Используем официальный образ Python
-FROM python:3.12.3
+FROM python:3.12.7
 
 # Копируем файл с зависимостями
 COPY requirements.txt requirements.txt
