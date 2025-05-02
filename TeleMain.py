@@ -8,8 +8,8 @@ from threading import Thread
 from config import work_TOKEN, test_TOKEN
 
 bot = telebot.TeleBot(work_TOKEN)
-# t=Thread(target=multi_update)
-# t.start()
+t=Thread(target=multi_update)
+t.start()
 
 @bot.message_handler(commands=['prepod'])
 def prepod_tim_table(message):
