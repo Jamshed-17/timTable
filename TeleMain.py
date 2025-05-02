@@ -50,8 +50,7 @@ def prepod_to_DB(message):
   btn7 = types.KeyboardButton("Вся неделя")
   btn8 = types.KeyboardButton("Главное меню")
   markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
-  bot.send_message(message.chat.id, text="На какой день недели выдать расписание?"
-                   .format(message.from_user), reply_markup=markup)
+  bot.send_message(message.chat.id, text="На какой день недели выдать расписание?", reply_markup=markup)
   bot.register_next_step_handler(message, prepod_day)
   
 def prepod_day(message):
@@ -76,8 +75,6 @@ def prepod_day(message):
                      text="Преподаватель в этот день отдыхает, расписания нет. Нажмите на кнопки чтобы продолжить", 
                      parse_mode="Markdown")
       bot.register_next_step_handler(message, prepod_day)
-
-    
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -133,7 +130,6 @@ def admin_urls(message):
     else:
       bot.send_message(message.chat.id, text=f"Чтобы вывести список всех пользователей в формате бд - нажмите"
                        .format(message.from_user), reply_markup = markup)
-
     start(message)
   elif message.text == "🗞️":
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -178,10 +174,8 @@ def groups(message):
       markup.add(*row_buttons)
   elif message.text == "/prepod":
     prepod_tim_table(message)
-    
-
   bot.send_message(message.chat.id, text="Выбери группу".format(message.from_user),reply_markup=markup)
-  bot.register_next_step_handler(message, getIdGroup);
+  bot.register_next_step_handler(message, getIdGroup)
 
 def getIdGroup(message):
   # Здесь можно выбрать день недели
