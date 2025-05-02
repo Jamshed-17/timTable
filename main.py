@@ -300,6 +300,7 @@ def teach_shredule_cout_day(day: str, name:str):
     """Эта функция выводит расписание прерода по дню недели. day - день недели, name - имя препода"""
     #update_teacher_sh()
     string = ""
+    returnet_str = ""
     text = format_teacher_schedule(name)
     # print(text)
     if "расписание не найдено" in text:
@@ -309,14 +310,20 @@ def teach_shredule_cout_day(day: str, name:str):
             string += f"{i}\n"
 
         for x in string.split("\n\n"):
-            if day in x:
-                # Сортировка
-                ret = ""
-                for i in sorted(x.split("\n")[1:]):
-                    ret += f"{i}\n"
-                return str(x.split("\n")[0]) + "\n" + ret
-                break  
+            for k in x.split("', '"):
+                if day in x:
+                    # print(k.replace("['", ""))
+                    # Сортировка
+                    ret = ""
+                    for i in sorted(x.split("\n")[1:]):
+                        ret += f"{i}\n"
+                        
+                    for d in (str(x.split("\n")[0]) + "\n" + ret).split(","):
+                        returnet_str += d.replace("'", "").replace("[", "").replace("]", "") + "\n"
+                    
+                    return returnet_str
    
+print(teach_shredule_cout_day("Пятница", "Камиров С.М."))
 
 '''Этот скрипт был для того, чтобы добавить в базу данных новый ключ
 with open("Data/DBS.json", "r") as file:
@@ -329,4 +336,5 @@ with open("Data/DBS.json", "r") as file:
     print("Ok")
     
 '''
+
 
