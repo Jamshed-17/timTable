@@ -113,7 +113,6 @@ def prepod_tim_table(message):
   
 def prepod_use(message):
   name = ''
-  bot.send_message(message.chat.id, text=f"Загрузка. Одну секунду")
   keyboard = types.ReplyKeyboardMarkup(True, True)
   list = prepod_ch(message.text)
   for i in list:
@@ -130,7 +129,7 @@ def prepod_to_DB(message):
   btn1 = types.KeyboardButton("Вывести расписание")
   btn2 = types.KeyboardButton("Главное меню")
   markup.add(btn1, btn2)
-  bot.send_message(message.chat.id, text="На какой день недели выдать расписание?", reply_markup=markup)
+  bot.send_message(message.chat.id, text="Выберите действие", reply_markup=markup)
   bot.register_next_step_handler(message, prepod_day)
   
 def prepod_day(message):
