@@ -60,7 +60,7 @@ def admin_urls(message):
     markup = telebot.types.InlineKeyboardMarkup(row_width=1)
     but1 = telebot.types.InlineKeyboardButton("Give BD", callback_data="BD_cout")
     markup.add(but1)
-    for i in range (len(all_users_cout())):
+    for i in range(len(all_users_cout())):
       cout = ""
       for j in range(len(all_users_cout()[i])):
         cout += all_users_cout()[i][j]
@@ -169,6 +169,8 @@ def groups(message):
       markup.add(*row_buttons)
   elif message.text == "/prepod":
     prepod_tim_table(message)
+  elif message.text == "/admin":
+    admin_menu(message)
   bot.send_message(message.chat.id, text="Выбери группу".format(message.from_user),reply_markup=markup)
   bot.register_next_step_handler(message, getIdGroup)
 

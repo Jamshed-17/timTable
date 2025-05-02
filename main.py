@@ -124,7 +124,8 @@ def all_users_cout():
     with open("Data/DBS.json", "r") as read_file:
         data = dict(json.load(read_file))
         IDs = list(data.keys())
-        x, i = 0
+        x = 0
+        i = 0
         return_list = []
         for i in IDs:
             x += 1
