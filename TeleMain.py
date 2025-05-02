@@ -8,8 +8,8 @@ from threading import Thread
 from config import work_TOKEN, test_TOKEN
 
 bot = telebot.TeleBot(work_TOKEN)
-t=Thread(target=multi_update)
-t.start()
+# t=Thread(target=multi_update)
+# t.start()
 
 @bot.message_handler(commands=['prepod'])
 def prepod_tim_table(message):
@@ -67,7 +67,6 @@ def prepod_day(message):
     bot.register_next_step_handler(message, prepod_day)
   else:
     try:
-      print(teach_shredule_cout_day(day=str(message.text), name=base_prepod_name(str(message.chat.id))))
       bot.send_message(message.chat.id, 
                       text=teach_shredule_cout_day(day=str(message.text), name=base_prepod_name(str(message.chat.id))), 
                       parse_mode="Markdown")
