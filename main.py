@@ -276,16 +276,24 @@ def format_teacher_schedule(teacher_name, schedule_file = "Data/teachers_schedul
     # Формируем строку с расписанием
     formatted_schedule = []
     for date, data in grouped_schedule.items():
-        formatted_schedule.append(f"{date} - {data['day']} ({teacher_name})")
+        data_pars = []
+        ret = []
+        ret.append(f"{date} - {data['day']} ({teacher_name})")
         for lesson in data["lessons"]:
             idx = lesson["number"]
             subject = lesson["name"]
             group = lesson["group"]
             office = lesson["office"] if lesson["office"].strip() else "кабинет не указан"
-            formatted_schedule.append(f"{idx}) {subject} {group} - {office}")
-        formatted_schedule.append("")  # Пустая строка для разделения дней
+            data_pars.append(f"{idx}) {subject} {group} - {office}")
+        for i in sorted(data_pars[1:]):
+            ret.append(i)
+        
+        formatted_schedule.append(ret)
+        formatted_schedule.append("\n")  # Пустая строка для разделения дней
 
+        
     return formatted_schedule
+
 
 
 def teach_shredule_cout_day(day: str, name:str):
@@ -302,7 +310,11 @@ def teach_shredule_cout_day(day: str, name:str):
 
         for x in string.split("\n\n"):
             if day in x:
-                return str(x)
+                # Сортировка
+                ret = ""
+                for i in sorted(x.split("\n")[1:]):
+                    ret += f"{i}\n"
+                return str(x.split("\n")[0]) + "\n" + ret
                 break  
    
 
@@ -317,3 +329,4 @@ with open("Data/DBS.json", "r") as file:
     print("Ok")
     
 '''
+

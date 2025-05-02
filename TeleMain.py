@@ -7,7 +7,7 @@ from main import *
 from threading import Thread
 from config import work_TOKEN, test_TOKEN
 
-bot = telebot.TeleBot(work_TOKEN)
+bot = telebot.TeleBot(test_TOKEN)
 t=Thread(target=multi_update)
 t.start()
 
@@ -59,7 +59,8 @@ def prepod_day(message):
   elif message.text == "Вся неделя":
     cout_schedule_prepod_week = ""               
     for i in format_teacher_schedule("".join(base_prepod_name(str(message.chat.id)))):
-        cout_schedule_prepod_week += f"{i}\n"
+      for j in i:
+        cout_schedule_prepod_week += f"{j}\n"
     bot.send_message(message.chat.id, 
                      text=cout_schedule_prepod_week, 
                      parse_mode="Markdown")
