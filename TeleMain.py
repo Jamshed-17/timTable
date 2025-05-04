@@ -8,7 +8,7 @@ from prepods import *
 from threading import Thread
 from config import work_TOKEN, test_TOKEN
 
-bot = telebot.TeleBot(work_TOKEN)
+bot = telebot.TeleBot(test_TOKEN)
 t=Thread(target=multi_update)
 t.start()
 

@@ -88,8 +88,14 @@ def format_teacher_schedule(teacher_name, schedule_file="Data/teachers_schedule.
 
         name_parts = [part.strip() for part in lesson["name"].split("/")]
         office_raw = lesson["office"]
-        office_parts = [part.strip() for part in office_raw.split("/")] if "/" in office_raw else [office_raw.strip()]
-
+        office_parts = []
+        if "/" in office_raw and "с/р" not in office_raw and "с/з" not in office_raw:
+            parts = office_raw.split("/")
+            for part in parts:
+                office_parts.append(part.strip())
+        else:
+            office_parts.append(office_raw.strip())
+                
         matching_indices = [
             i for i, part in enumerate(name_parts) if surname in part
         ]
@@ -119,7 +125,7 @@ def format_teacher_schedule(teacher_name, schedule_file="Data/teachers_schedule.
                 "number": number,
                 "name": subject.strip(),
                 "group": group,
-                "office": office if office != "с" else "с/р"
+                "office": office
             })
 
     # Сортировка по датам
