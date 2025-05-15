@@ -2,6 +2,7 @@ import json
 from collections import defaultdict
 import requests
 import time
+import re
 
 
 def groups_id():
@@ -13,6 +14,10 @@ def groups_id():
             list_of_groups.append(Group_data[i]["groups"][n]["id"])
         
     return list_of_groups
+
+from collections import defaultdict
+import requests
+import re
 
 def extract_schedule():
     # Словарь для хранения расписания всех преподавателей
@@ -35,21 +40,37 @@ def extract_schedule():
             lessons = day_schedule["lessons"]
 
             for lesson in lessons:
-                if lesson.get("name"):  # Проверка, что у урока есть название
-                    # Извлечение ФИО преподавателя
-                    fio = " ".join(lesson["name"].split()[-3:])
-                    try:
-                        to_fio = fio.split(" ")
-                        fio = f"{to_fio[0]} {to_fio[1]}{to_fio[2]}"
-                        # fio = fio.replace(fio[fio.index(".")+1], "", 2)
-                    except: pass
-                    
-                    # Добавление расписания в словарь для преподавателя
+                if not lesson.get("name"):  # Пропускаем пустые уроки
+                    continue
+
+                # Обрабатываем поле "name": удаляем переносы строк и лишние пробелы
+                name_raw = lesson["name"].replace("\n", " ").strip()
+                
+                # Разделяем на части, если есть "/"
+                name_parts = [part.strip() for part in name_raw.split("/") if part.strip()]
+
+                # Обрабатываем каждую часть отдельно
+                for part in name_parts:
+                    # Извлекаем ФИО преподавателя (последние 2-3 слова)
+                    words = part.split()
+                    if len(words) < 2:
+                        continue  # Пропускаем, если нет ФИО
+
+                    # Ищем фамилию и инициалы (формат "Фамилия И.О." или "Фамилия И. О.")
+                    fio_match = re.search(r"([А-ЯЁ][а-яё]+)\s+([А-ЯЁ]\.\s*[А-ЯЁ]\.?)", part)
+                    if not fio_match:
+                        continue  # Пропускаем, если не нашли ФИО
+
+                    fio = fio_match.group(0).strip()
+                    # Приводим к единому формату (убираем лишние пробелы между инициалами)
+                    fio = re.sub(r"([А-ЯЁ]\.)\s+([А-ЯЁ]\.)", r"\1\2", fio)
+
+                    # Добавляем запись в расписание преподавателя
                     all_teachers_schedule[fio].append({
                         "group": group_name,
                         "date": date,
                         "day": day,
-                        "name": lesson["name"],
+                        "name": part,  # Сохраняем только часть с текущим преподавателем
                         "number": lesson["number"],
                         "office": lesson["office"],
                         "sub_group": lesson["sub_group"],
@@ -71,3 +92,4 @@ def multi_update():
     while True:
         update_teacher_sh()
         time.sleep(600)
+        

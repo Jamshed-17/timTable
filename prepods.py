@@ -76,7 +76,7 @@ def format_teacher_schedule(teacher_name, schedule_file="Data/teachers_schedule.
 
     # Разбираем фамилию и инициалы
     surname = teacher_name.split()[0]
-    initials_pattern = r"\s*[А-ЯЁ]\.\s*[А-ЯЁ]\.?"
+    initials_pattern = r"\s*[А-ЯЁ]\.\s*[А-ЯЁ]\.?\s*"
     full_pattern = re.compile(rf"{surname}{initials_pattern}", re.UNICODE)
 
     for lesson in lessons:
@@ -86,18 +86,20 @@ def format_teacher_schedule(teacher_name, schedule_file="Data/teachers_schedule.
         group = lesson["group"]
         sub_group = lesson.get("sub_group", "None")
 
-        name_parts = [part.strip() for part in lesson["name"].split("/")]
+        # Обрабатываем name: убираем переносы строк и лишние пробелы, разбиваем по /
+        name_raw = lesson["name"].replace("\n", " ").strip()
+        name_parts = [part.strip() for part in name_raw.split("/") if part.strip()]
+        
         office_raw = lesson["office"]
         office_parts = []
         if "/" in office_raw and "с/р" not in office_raw and "с/з" not in office_raw:
-            parts = office_raw.split("/")
-            for part in parts:
-                office_parts.append(part.strip())
+            office_parts = [part.strip() for part in office_raw.split("/")]
         else:
             office_parts.append(office_raw.strip())
                 
         matching_indices = [
-            i for i, part in enumerate(name_parts) if surname in part
+            i for i, part in enumerate(name_parts) 
+            if surname in part  # ищем фамилию в каждой части
         ]
 
         for i in matching_indices:
@@ -110,7 +112,6 @@ def format_teacher_schedule(teacher_name, schedule_file="Data/teachers_schedule.
 
             # Добавляем "гр" только если подгруппа указана и её нет в названии
             if sub_group and sub_group != "None":
-                # Проверяем: есть ли подгруппа как отдельное слово уже в названии
                 if re.search(rf"\b{sub_group}\b", subject_raw):
                     subject = re.sub(rf"\b{sub_group}\b", f"{sub_group} гр", subject_raw)
                 else:

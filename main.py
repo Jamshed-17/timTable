@@ -171,9 +171,9 @@ def base_group_name(id):
 def base_open_admin():
     #Выводит базу данных, для сохранения (Админ панель)
     with open("Data/DBS.json", "r") as read_file:
-        data = dict(json.load(read_file))
+        data = json.dumps(dict(json.load(read_file)))
     write_file = open("Data/DB_save.txt", "w")
-    write_file.write(str(data).replace("'", '"'))
+    write_file.write(str(data))
     write_file.close()
     return "Data/DB_save.txt"
 

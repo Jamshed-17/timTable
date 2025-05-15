@@ -20,7 +20,8 @@ def start(message):
     butn2 = types.KeyboardButton("2 курс")
     butn3 = types.KeyboardButton("3 курс")
     butn4 = types.KeyboardButton("4 курс")
-    markup.add(butn1, butn2, butn3, butn4,)
+    butn5 = types.KeyboardButton("Преподаватели")
+    markup.add(butn1, butn2, butn3, butn4, butn5)
     bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
     bot.register_next_step_handler(message, groups)
 
@@ -53,7 +54,8 @@ def admin_urls(message):
     butn2 = types.KeyboardButton("2 курс")
     butn3 = types.KeyboardButton("3 курс")
     butn4 = types.KeyboardButton("4 курс")
-    markup.add(butn1, butn2, butn3, butn4,)
+    butn5 = types.KeyboardButton("Преподаватели")
+    markup.add(butn1, butn2, butn3, butn4, butn5)
     bot.send_message(message.chat.id, text="Выбери свой курс".format(message.from_user), reply_markup=markup)
     bot.register_next_step_handler(message, groups)
   elif message.text == "👥":
@@ -135,6 +137,8 @@ def prepod_to_DB(message):
 def prepod_day(message):
   if message.text == "Главное меню" or message.text == "/start":
     start(message)
+  elif message.text == "/prepod":
+    prepod_tim_table(message)
   elif message.text == "Вывести расписание":
     bot.send_message(message.chat.id, text=format_teacher_schedule("".join(base_prepod_name(str(message.chat.id)))), parse_mode="Markdown")
     bot.register_next_step_handler(message, prepod_day)
@@ -166,7 +170,7 @@ def groups(message):
     for index in range(0, len(groups_for_keyboard(3)), 3):
       row_buttons = groups_for_keyboard(3)[index:index + 3] 
       markup.add(*row_buttons)
-  elif message.text == "/prepod":
+  elif message.text == "/prepod" or message.text == "Преподаватели":
     prepod_tim_table(message)
   elif message.text == "/admin":
     admin_menu(message)
@@ -210,6 +214,8 @@ def func(message):
           bot.register_next_step_handler(message, func)
       elif (message.text == "Сменить группу"):
         start(message)
+      elif (message.text ==  "/prepod"):
+        prepod_tim_table(message)
     # except:
     #   bot.send_message(message.chat.id, text="Либо твой косяк, либо мой. Давай начнём с начала, нажми на /start")
  
