@@ -89,6 +89,3 @@ def multi_update():
         update_teacher_sh()
         time.sleep(600)
         
-
-for i in extract_schedule()["Шестакова Е.Е."]:
-    print(i)
