@@ -9,15 +9,11 @@ def groups_id():
     list_of_groups = []
     Group_list = requests.get("https://urtk-journal.ru/api/groups/urtk")
     Group_data = Group_list.json()
-    for i in range(0, 3):
+    for i in range(0, len(Group_data)):
         for n in range(len(Group_data[i]["groups"])):
             list_of_groups.append(Group_data[i]["groups"][n]["id"])
         
     return list_of_groups
-
-from collections import defaultdict
-import requests
-import re
 
 def extract_schedule():
     # Словарь для хранения расписания всех преподавателей
@@ -93,3 +89,6 @@ def multi_update():
         update_teacher_sh()
         time.sleep(600)
         
+
+for i in extract_schedule()["Шестакова Е.Е."]:
+    print(i)
