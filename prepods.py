@@ -186,8 +186,7 @@ with open("Data/DBS.json", "r") as file:
         studentGroupChoise = {"groupName":data[ID]["groupName"], "username":data[ID]["username"], "time":data[ID]["time"], "prepod": False}
         data[ID] = studentGroupChoise
         with open('Data/DBS.json', "w", encoding='utf-8') as write_file:
-            json.dump(data, write_file, ensure_ascii=False)
-    print("Ok")
+            json.dump(data, write_file, ensure_ascii=False)("Ok")
     
 '''
 
