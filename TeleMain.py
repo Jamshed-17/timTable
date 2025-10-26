@@ -142,15 +142,13 @@ def handle_admin_menu(message):
         bot.send_message(message.chat.id, "Неизвестная команда в админ-панели.")
 
 @bot.message_handler(content_types=['text', 'photo', 'video'], func=lambda message: get_user_state(message.chat.id) == "admin_news")
-@rate_limit
 def handle_news_input(message):
+    if message.text == "Отмена":
+        start(message)
+        return 
+        
     if not (message.chat.username and message.chat.username.lower() == ADMIN_USERNAME.lower()):
         clear_user_state(message.chat.id)
-        return
-
-    if message.text == "Отмена":
-        bot.send_message(message.chat.id, "Рассылка отменена")
-        admin_menu(message)
         return
     
     content_type = 'text'
