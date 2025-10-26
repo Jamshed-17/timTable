@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  telegram-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    container_name: telegram-bot
+    volumes:
+      - ./Data:/app/Data
+    environment:
+      - PYTHONUNBUFFERED=1

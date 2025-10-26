@@ -4,3 +4,5 @@ config.py
 Data/DBS.json
 Data/urtk-journal.ru.md
 Data/teachers_schedule.json
+add_zvon.py
+Data/*
