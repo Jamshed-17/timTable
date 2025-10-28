@@ -25,7 +25,7 @@ from returned import multi_update
 
 # --------------------------------- Инициализация ---------------------------------
 
-bot = telebot.TeleBot(work_TOKEN, exception_handler=telebot.ExceptionHandler())
+bot = telebot.TeleBot(test_TOKEN, exception_handler=telebot.ExceptionHandler())
 t = Thread(target=multi_update)
 t.daemon = True
 t.start()

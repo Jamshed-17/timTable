@@ -126,14 +126,14 @@ def set_user_zvon_setting(user_id: str, value: bool):
                 
 # ----------------- Основная функция расписания -----------------
 
-def Is_t_group(group_id: str, day_text: str, user_id: str):
+def Is_t_group(group_id: str, day_text: str, user_id: str, day_obj: dict | None = None):
     """
-    Преобразовывает данные из API в строку для вывода расписания, 
-    включая расписание звонков, если включено.
+    Преобразовывает данные из API в строку расписания.
+    day_obj – уже готовый объект дня (используется при рекурсивном вызове «Вся неделя»).
     """
     show_zvon = get_user_zvon_setting(user_id)
-    
-    #Получаем доступ к объекту
+
+    # ------------------------------------------------- Получаем данные -------------------------------------------------
     try:
         client = requests.get(f"https://urtk-journal.ru/api/schedule/group/{group_id}", timeout=10)
         client.raise_for_status()
@@ -141,101 +141,109 @@ def Is_t_group(group_id: str, day_text: str, user_id: str):
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching group schedule: {e}")
         return "Ошибка при получении расписания. Попробуйте позже."
-    
-    schedule_data = data.get("schedule", [])
-    
-    # Если запрошена "Вся неделя", вызываем рекурсивно для каждого дня
-    if day_text == "Вся неделя":
-        # Исключаем Воскресенье (API может его содержать, но оно пустое)
-        full_schedule = [Is_t_group(group_id, d["day"], user_id) for d in schedule_data if d["day"] != "Воскресенье"]
-        return "\n\n".join(full_schedule) if full_schedule else "Расписание на неделю отсутствует."
 
-    target_day_schedule = None
-    for day_schedule in schedule_data:
-        if day_schedule["day"] == day_text:
-            target_day_schedule = day_schedule
-            break
-            
-    if not target_day_schedule:
-        return f"Расписание на *{day_text}* отсутствует."
-    
-    lessons = target_day_schedule.get("lessons", [])
-    output_lines = []
-    
-    # 1. Заголовок дня
+    schedule_data = data.get("schedule", [])
     group_name = data.get("name", "Группа")
-    output_lines.append(f"*{target_day_schedule.get("date", "")[0:5]} - {target_day_schedule["day"]} ({group_name})*")
+
+    # ------------------------------------------------- ВСЯ НЕДЕЛЯ -------------------------------------------------
+    if day_text == "Вся неделя":
+        # Берём только текущую учебную неделю (Пн → Сб)
+        today = datetime.datetime.today()
+        monday = today - datetime.timedelta(days=today.weekday())          # Понедельник текущей недели
+        week_start = monday
+        week_end   = monday + datetime.timedelta(days=10) 
+        print(week_end)
+        # Суббота включительно
+
+        # Список дней, которые попадают в нужный диапазон и не воскресенье
+        week_days = [
+            d for d in schedule_data
+            if d.get("day") != "Воскресенье"
+            and (dt := d.get("date")) and (dt := datetime.datetime.strptime(dt, "%d.%m.%Y"))
+            and week_start <= dt <= week_end
+        ]
+
+        # Формируем расписание, передавая каждый объект дня в рекурсию
+        parts = [
+            Is_t_group(group_id, d["day"], user_id, day_obj=d)
+            for d in week_days
+        ]
+        return "\n\n".join(filter(None, parts)) or "Расписание на неделю отсутствует."
+
+    # ------------------------------------------------- ОДИН ДЕНЬ -------------------------------------------------
+    # Если day_obj передан – используем его, иначе ищем в schedule_data
+    target = day_obj or next(
+        (d for d in schedule_data if d.get("day") == day_text), None
+    )
+
+    if not target:
+        return f"Расписание на *{day_text}* отсутствует."
+
+    lessons = target.get("lessons", [])
+    lines = []
     
-    # 2. Вывод пар
-    for n in range(0, len(lessons)): 
-        lesson = lessons[n]
-        # Используем lesson["number"] как номер пары
+    date_str = target.get("date", "")[:5]
+    
+    # Заголовок
+          
+    lines.append(f"*{date_str} - {target['day']} ({group_name})*")
+
+    # Пары
+    for lesson in lessons:
         num = lesson.get("number")
         if num is None:
             continue
-            
-        lesson_text = ""
-        zvon_time = get_zvon_time_range(num, target_day_schedule["day"]) if show_zvon else ""
-        # Форматирование разделителя для выравнивания
-        zvon_separator = f" | {zvon_time}" if zvon_time else ""
-        
-        name_raw = lesson.get("name", "")
-        office_raw = lesson.get("office", "")
-        
+
+        zvon = get_zvon_time_range(num, target["day"]) if show_zvon else ""
+        zvon_sep = f" | {zvon}" if zvon else ""
+
+        name_raw  = lesson.get("name", "") or ""
+        office_raw = lesson.get("office", "") or ""
+
         try:
+            # ---------- подгруппы ----------
             if "/" in name_raw and "/" in office_raw:
-                # Случай с двумя подгруппами
-                
-                # Попытка найти и разделить по подгруппам
-                name_parts = [p.strip() for p in name_raw.split("/")]
+                name_parts   = [p.strip() for p in name_raw.split("/")]
                 office_parts = [o.strip() for o in office_raw.split("/")]
-                
-                # Чистим название предмета
-                def clean_name(n):
-                    # Убираем лишние символы и подгруппы
+
+                def clean(n):
                     n = n.split(" | ")[0]
-                    # Удаляем ФИО (два последних слова)
-                    n_parts = n.split()
-                    if len(n_parts) >= 2:
-                        if n_parts[-1].isupper() and n_parts[-2].isupper():
-                             n = " ".join(n_parts[:-2]) 
-                        elif len(n_parts[-2]) == 2 and n_parts[-2].endswith('.') and len(n_parts[-1]) == 2 and n_parts[-1].endswith('.'):
-                             n = " ".join(n_parts[:-2])
+                    p = n.split()
+                    if len(p) >= 2 and p[-1].isupper() and p[-2].isupper():
+                        return " ".join(p[:-2])
+                    if len(p) >= 2 and len(p[-2]) == 2 and p[-2].endswith('.') \
+                       and len(p[-1]) == 2 and p[-1].endswith('.'):
+                        return " ".join(p[:-2])
                     return n
-                
-                name1 = clean_name(name_parts[0])
-                name2 = clean_name(name_parts[1]) if len(name_parts) > 1 else ""
-                
-                lesson_text = f"*{num}*)\n" \
-                              f"  {name1} - {office_parts[0]}{zvon_separator}\n" \
-                              f"  {name2} - {office_parts[1]}{zvon_separator}"
-                              
-            elif name_raw:
-                # Случай с одной группой или кл. час
-                name_display = name_raw.split(" | ")[0].split(" / ")[0].strip()
-                
-                # Добавление кл. часа, если есть
-                if "Кл. час" in name_display:
-                    lesson_text = f"*{num}*) {name_display} - {office_raw}{zvon_separator}"
-                else:
-                    # Чистим название от ФИО преподов, если оно там есть в конце
-                    name_display_parts = name_display.split()
-                    if len(name_display_parts) > 3: 
-                        name_display = " ".join(name_display_parts[:-3])
-                    elif len(name_display_parts) > 2:
-                        # Если 3 слова, но не больше, удаляем последние 2 (И.О.)
-                        name_display = " ".join(name_display_parts[:-2])
-                    
-                    lesson_text = f"*{num}*) {name_display} - {office_raw}{zvon_separator}"
-                
-            output_lines.append(lesson_text)
-            
+
+                n1 = clean(name_parts[0])
+                n2 = clean(name_parts[1]) if len(name_parts) > 1 else ""
+
+                lines.append(
+                    f"*{num}*)\n"
+                    f"  {n1} - {office_parts[0]}{zvon_sep}\n"
+                    f"  {n2} - {office_parts[1]}{zvon_sep}"
+                )
+                continue
+
+            # ---------- обычная пара ----------
+            name_disp = name_raw.split(" | ")[0].split(" / ")[0].strip()
+            if "Кл. час" in name_disp:
+                lines.append(f"*{num}*) {name_disp} - {office_raw}{zvon_sep}")
+            else:
+                p = name_disp.split()
+                if len(p) > 3:
+                    name_disp = " ".join(p[:-3])
+                elif len(p) > 2:
+                    name_disp = " ".join(p[:-2])
+                lines.append(f"*{num}*) {name_disp} - {office_raw}{zvon_sep}")
+
         except Exception as e:
-            logging.error(f"Error processing lesson: {e}")
-            # Обработка нетипичных или пустых записей
-            output_lines.append(f"*{num}*) {zvon_separator}")
-            
-    return "\n".join(output_lines)
+            logging.error(f"Error processing lesson {target.get('date')} #{num}: {e}")
+            lines.append(f"*{num}*){zvon_sep}")
+
+    return "\n".join(lines)
+
 # ----------------- Функции для работы с БД -----------------
 
 def get_user_setting_string(user_id: str) -> str:
