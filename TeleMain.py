@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 # --------------------------------- Импорты и конфигурация ---------------------------------
 
 try:
-    from config import work_TOKEN, test_TOKEN, SCHEDULE_BUDNI, SCHEDULE_SUBBOTA, ADMIN_USERNAME
+    from config import work_TOKEN, test_TOKEN, SCHEDULE_BUDNI, SCHEDULE_SUBBOTA, ADMIN_USERNAME, LOOSER_LIST, LOOSER_MESSAGE
 except ImportError:
     logging.warning("⚠ Не найден config.py. Используются заглушки.")
     work_TOKEN = "TEST_TOKEN"
@@ -26,6 +26,7 @@ from returned import multi_update
 # --------------------------------- Инициализация ---------------------------------
 
 bot = telebot.TeleBot(work_TOKEN, exception_handler=telebot.ExceptionHandler())
+bot.set_webhook()
 t = Thread(target=multi_update)
 t.daemon = True
 t.start()
@@ -346,6 +347,10 @@ def handle_day(message):
                .replace("Sunday", "Воскресенье"))
 
     try:
+        if message.chat.username and message.chat.username.lower() in LOOSER_LIST:
+                bot.send_message(message.chat.id, LOOSER_MESSAGE, parse_mode="Markdown")
+                return
+                
         gid = base_group_name(str(message.chat.id))
         if not gid:
             bot.send_message(message.chat.id, "Сначала выберите группу.")
